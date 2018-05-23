@@ -1,0 +1,53 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-body" style="padding: 15px 0;">
+                <ul class="nav nav-tabs">
+                    <li><a href="/node/list">节点列表</a></li>
+                    <li class="active"><a href="/node/add">添加节点</a></li>
+                </ul>
+            </div>
+            <br>
+            <div class="panel-body">
+                <form class="form-horizontal" action="/node/save" method="post" onsubmit="return false">
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"><span class="text-danger"> * </span>管理 URI</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="manager_uri" class="form-control" placeholder="http://wmqx.com:3302" value="" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"><span class="text-danger"> * </span>发布 URI</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="publish_uri" class="form-control" placeholder="http://wmqx.com:3303" value="" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"><span class="text-danger">*</span>TokenHeader</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="token_header_name" class="form-control" placeholder="wmqx api token header name" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"><span class="text-danger">*</span>TokenValue</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="token" class="form-control" placeholder="wmqx api token" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"><span class="text-danger"> * </span>节点备注</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="comment" class="form-control" placeholder="wmqx 节点备注" value="" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-1 col-sm-10">
+                            <button type="button" name="submit" onclick="Form.ajaxSubmit(this.form, false)" class="btn btn-success">保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <hr>
+        </div>
+    </div>
+</div>

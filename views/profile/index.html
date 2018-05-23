@@ -1,0 +1,51 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-body" style="padding: 15px 0;">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="/profile/index">个人信息</a></li>
+                    <li><a href="/profile/repass">修改密码</a></li>
+                </ul>
+            </div>
+            <br>
+            <div class="panel-body">
+            <form class="form-horizontal" action="/profile/save" method="post" onsubmit="return false">
+                <div class="form-group">
+                    <label class="col-sm-1 control-label"><span class="text-danger"> * </span>用户名</label>
+                    <div class="col-sm-4">
+                        <input type="text" name="username" class="form-control" placeholder="用户名" value="{{.user.username}}" readonly required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-1 control-label"><span class="text-danger"> * </span>邮箱</label>
+                    <div class="col-sm-4">
+                        <input type="email" name="email" class="form-control" placeholder="邮箱"
+                               value="{{.user.email}}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-1 control-label">手机</label>
+                    <div class="col-sm-4">
+                        <input type="text" name="mobile" class="form-control" placeholder="手机" value="{{.user.mobile}}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-1 control-label"><span class="text-danger"> * </span> 角色</label>
+                    <div class="col-sm-4">
+                    {{if eq .user.role "0" }}
+                        <input type="text" name="role" class="form-control" value="普通用户" disabled> {{end}} {{if eq .user.role "1" }}
+                        <input type="text" name="role" class="form-control" value="管理员" disabled> {{end}} {{if eq .user.role "2" }}
+                        <input type="text" name="role" class="form-control" value="超级管理员" disabled> {{end}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <button type="button" name="submit" onclick="Form.ajaxSubmit(this.form, false)" class="btn btn-success">更新</button>
+                    </div>
+                </div>
+            </form>
+            </div>
+            <hr>
+        </div>
+    </div>
+</div>

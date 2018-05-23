@@ -1,0 +1,71 @@
+<div class="container">
+    <div class="row">{{$nodes := .nodes}}
+        <div class="col-md-12">
+            <div class="panel-body" style="padding: 15px 0;">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="/node/list">节点列表</a></li>
+                    <li><a href="/node/add">添加节点</a></li>
+                </ul>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <form>
+                        <div class="col-md-3 col-lg-offset-9">
+                            <div class="input-group">
+                                <input class="form-control" type="text" value="{{.comment}}" placeholder="节点备注" name="keyword">
+                                  <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+                                  </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="w5p">ID</th>
+                            <th class="w15p">管理URI</th>
+                            <th class="w15p">发布URI</th>
+                            <th class="w15p">TokenHeader</th>
+                            <th class="w15p">TokenValue</th>
+                            <th>备注</th>
+                            <th class="w10p">创建时间</th>
+                            <th class="w15p">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $node := $nodes}}
+                        <tr>
+                            <td class="center">{{$node.node_id}}</td>
+                            <td>{{$node.manager_uri}}</td>
+                            <td>{{$node.publish_uri}}</td>
+                            <td>{{$node.token_header_name}}</td>
+                            <td class="center">
+                                <strong class="text text-success">{{$node.token}}</strong>
+                            </td>
+                            <td>{{$node.comment}}</td>
+                            <td class="center">{{dateFormat $node.create_time "Y-m-d" }}</td>
+                            <td class="center">
+                                <a name="edit" data-link="/node/edit?node_id={{$node.node_id}}"><i class="glyphicon glyphicon-pencil"> </i>修改</a>
+                                <a name="message" data-link="/node/message?node_id={{$node.node_id}}"><i class="glyphicon glyphicon-play-circle"> </i>消息</a>
+                                <a name="delete" onclick='Common.confirm("确认要删除吗?", "/node/delete?node_id={{$node.node_id}}")'><i class="glyphicon glyphicon-remove"></i>删除</a>
+                            </td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                {{template "paginator/default.html" .}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/modules/node.js"></script>
+<script type="text/javascript">
+    Node.bindFancyBox();
+</script>

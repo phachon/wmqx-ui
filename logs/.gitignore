@@ -1,8 +1,7 @@
-logs/*
+logs/*.log
 .DS_Store
 !.gitignore
 *.exe
 *.exe~
 *.db
 wmqx-ui
-.session/

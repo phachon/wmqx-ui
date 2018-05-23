@@ -1,0 +1,90 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-body" style="padding: 15px 0;">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="javascript:;">Wmq日志</a></li>
+                </ul>
+            </div>
+            <div class="panel-body" style="padding-left: 9px;">
+                <div class="row">
+                    <form action="/log/list" method="post">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">节点</span>
+                                <select class="form-control" name="node_id">
+                                    {{range $node := .nodes}}
+                                    <option value="{{$node.Id}}" {{if eq $node.Id $.node_id}} selected {{end}}>{{$node.Ip}}:{{$node.ManagerPort}}</option>
+                                    {{end}}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <span class="input-group-addon">日志类型</span>
+                                <select class="form-control" name="type">
+                                    <option value="errror" {{if eq .log_type "error"}} selected {{end}}>ERROR</option>
+                                    <option value="info" {{if eq .log_type "info"}} selected {{end}}>INFO</option>
+                                    <option value="debug" {{if eq .log_type "debug"}} selected {{end}}>DEBUG</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <input class="form-control" name="keyword" type="text" value="{{.keyword}}" placeholder="关键字">
+                                <span class="input-group-btn">
+                                  <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" name="log_download" data-link="/log/download?node_id={{.node_id}}"><i class="glyphicon glyphicon-download-alt"></i> 下载日志 </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="w13p">Time</th>
+                            <th class="w8p">Level</th>
+                            <th>Content</th>
+                            <th class="w10p">Milliseconds</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $log := .logs}}
+                        <tr>
+                            <td class="center">{{dateFormat $log.Timestamp "Y-m-d H:i:s"}}</td>
+                            <td class="center">
+                                {{if eq $log.LevelString "INFO"}}
+                                <span class="label label-info">{{$log.LevelString}}</span>
+                                {{else if eq $log.LevelString "ERROR"}}
+                                <span class="label label-danger">{{$log.LevelString}}</span>
+                                {{else if eq $log.LevelString "DEBUG"}}
+                                <span class="label label-primary">{{$log.LevelString}}</span>
+                                {{end}}
+                            </td>
+                            <td>
+                                <a data-toggle="collapse" data-target="#{{$log.Timestamp}}_{{$log.Milliseconds}}">{{$log.Content}}</a>
+                                <div id="{{$log.Timestamp}}_{{$log.Milliseconds}}" class="collapse"><strong>{{$log.FieldsString}}</strong></div>
+                            </td>
+                            <td class="center"><label class="text-danger">{{$log.Milliseconds}}</label></td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/modules/log.js"></script>
+<script type="text/javascript">
+    Log.bindFancyBox();
+</script>

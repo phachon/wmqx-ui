@@ -1,0 +1,39 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th class="w15p">消息名称</th>
+                <th class="w8p">模式</th>
+                <th class="w8p">持久化</th>
+                <th class="w8p">验证Token</th>
+                <th class="w20p">Token</th>
+                <th class="w15p">备注</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range $message := .messages}}
+            <tr>
+                <td>{{$message.name}}</td>
+                <td class="center">{{$message.mode}}</td>
+                <td class="center">
+                {{if eq $message.durable true}}
+                    是
+                {{else}}
+                    否
+                {{end}}
+                </td>
+                <td class="center">
+                {{if eq $message.is_need_token true}}是{{else}}否{{end}}
+                </td>
+                <td>{{$message.token}}</td>
+                <td>{{$message.comment}}</td>
+            </tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer"></div>
+</div>

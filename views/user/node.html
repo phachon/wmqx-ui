@@ -1,0 +1,40 @@
+<form action="/user/privilege" method="post" onsubmit="return false">
+<div class="panel panel-default">{{$nodes := .nodes}}
+    <div class="panel-body">
+        <strong class="text text-danger"> <i class="glyphicon glyphicon-volume-up"></i> 请为用户授权节点</strong>
+    </div>
+    <input type="hidden" name="user_id" value="{{.user.user_id}}">
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th class="w5p"><input type="checkbox" id="select_node"></th>
+                <th class="w18p">管理URI</th>
+                <th class="w18p">发布URI</th>
+                <th class="w18p">Token</th>
+                <th>备注</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range $node := $nodes}}
+            <tr>
+                <td class="center"><input type="checkbox" name="node_id" {{if eq $node.is_default "1"}} checked="checked" {{end}} value="{{$node.node_id}}"></td>
+                <td>{{$node.manager_uri}}</td>
+                <td>{{$node.publish_uri}}</td>
+                <td class="center">
+                    <strong class="text text-success">{{$node.token}}</strong></td>
+                <td>{{$node.comment}}</td>
+            </tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer">
+        <button type="button" name="submit" onclick="Form.ajaxSubmit(this.form, true)" class="btn btn-sm btn-success">确认</button>
+    </div>
+</div>
+</form>
+<script src="/static/js/modules/user.js"></script>
+<script type="text/javascript">
+    User.selectNode("#select_node");
+</script>

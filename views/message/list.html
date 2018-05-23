@@ -1,0 +1,76 @@
+<div class="container">{{$nodes := .nodes}}{{$nodeId := .node_id}}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-body" style="padding: 15px 0;">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="javascript:;">消息列表</a></li>
+                </ul>
+            </div>
+            <div class="panel-body" style="padding-left: 9px;">
+                <div class="row">
+                    <form>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">选择节点</span>
+                                <select class="form-control" onchange="Message.node(this)">
+                                    {{range $node := $nodes}}
+                                    <option value="{{$node.node_id}}" {{if eq $node.node_id $nodeId}} selected {{end}}>{{$node.comment}} -- {{$node.manager_uri}}</option>
+                                    {{end}}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" name="add_message" data-link="/message/add?node_id={{$nodeId}}"><i class="glyphicon glyphicon-plus"></i> 添加消息 </button>
+                                <button type="button" class="btn btn-success" name="test_message" data-link="/message/test?node_id={{$nodeId}}" style="margin-left: 5px;"><i class="glyphicon glyphicon-send"></i> 测试消息 </button>
+                                <button onclick="Common.confirm('确定要重启该节点吗？', '/node/reload?node_id={{$nodeId}}')" type="button" class="btn btn-danger" style="margin-left: 5px;"><i class="glyphicon glyphicon-refresh"></i> 重启节点 </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="w15p">消息名称</th>
+                            <th class="w8p">模式</th>
+                            <th class="w8p">持久化</th>
+                            <th class="w8p">验证Token</th>
+                            <th class="w20p">Token</th>
+                            <th>备注</th>
+                            <th class="w10p">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $message := .messages}}
+                        <tr>
+                            <td>{{$message.name}}</td>
+                            <td class="center">{{$message.mode}}</td>
+                            <td class="center">
+                                {{if eq $message.durable true}}是{{else}}否{{end}}
+                            </td>
+                            <td class="center">
+                                {{if eq $message.is_need_token true}}是{{else}}否{{end}}
+                            </td>
+                            <td>{{$message.token}}</td>
+                            <td>{{$message.comment}}</td>
+                            <td class="center">
+                                <a data-link="/message/edit?node_id={{$nodeId}}&message_name={{$message.name}}" name="edit"><i class="glyphicon glyphicon-pencil"></i> 修改</a>
+                                <a onclick="Common.confirm('确定要删除吗？', '/message/delete?node_id={{$nodeId}}&message_name={{$message.name}}')"><i class="glyphicon glyphicon-remove"></i> 删除</a>
+                            </td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/modules/message.js"></script>
+<script type="text/javascript">
+    Message.bindFancyBox();
+</script>

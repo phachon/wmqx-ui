@@ -1,0 +1,81 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-body" style="padding: 15px 0;">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="/user/list">用户列表</a></li>
+                    <li><a href="/user/add">添加用户</a></li>
+                </ul>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <form>
+                        <div class="col-md-3 col-lg-offset-9">
+                            <div class="input-group">
+                                <input class="form-control" type="text" value="{{.keyword}}" placeholder="用户名/user_id" name="keyword">
+                                  <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+                                  </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="w8p">ID</th>
+                            <th class="w18p">用户名</th>
+                            <th class="w18p">邮箱</th>
+                            <th class="w13p">手机</th>
+                            <th class="w13p">角色</th>
+                            <th class="w15p">创建时间</th>
+                            <th class="w15p">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $user := .users }}
+                        <tr>
+                            <td class="center">{{$user.user_id}}</td>
+                            <td>{{$user.username}}</td>
+                            <td>{{$user.email}}</td>
+                            <td class="center">{{$user.mobile}}</td>
+                            <td class="center">
+                            {{if eq $user.role "0"}}
+                                <strong class="text text-info">普通用户</strong>
+                            {{else if eq $user.role "1"}}
+                                <strong class="text text-primary">管理员</strong>
+                            {{else if eq $user.role "2"}}
+                                <strong class="text text-danger">超级管理员</strong>
+                            {{else}}
+                                <strong class="text text-info">普通用户</strong>
+                            {{end}}
+                            </td>
+                            <td class="center">{{dateFormat $user.create_time "Y-m-d H:i:s" }}</td>
+                            <td class="center">
+                                {{if eq $user.role "2"}}
+                                    --
+                                {{else}}
+                                <a name="edit" data-link="/user/edit?user_id={{$user.user_id}}"><i class="glyphicon glyphicon-pencil"></i>修改</a>
+                                <a name="node" data-link="/user/node?user_id={{ $user.user_id }}"><i class="glyphicon glyphicon-th-list"></i>授权</a>
+                                <a name="remove" onclick='Common.confirm("确认要删除吗?", "/user/remove?user_id={{$user.user_id}}")'><i class="glyphicon glyphicon-remove"></i>删除</a>
+                                {{end}}
+                            </td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                {{template "paginator/default.html" .}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/modules/user.js"></script>
+<script type="text/javascript">
+    User.bindFancyBox();
+</script>
