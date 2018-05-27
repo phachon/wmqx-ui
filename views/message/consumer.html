@@ -1,0 +1,82 @@
+<div class="container">
+    <div class="row">{{$message := .message}}{{$consumers := .consumers}}{{$node := .node}}
+        <div class="col-md-12">
+            <div class="panel-body" style="padding: 15px 0;">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="javascript:;">消费者列表</a></li>
+                </ul>
+            </div>
+            <div class="panel-body" style="padding-left: 8px;">
+                <div class="row">
+                    <form>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">节点</span>
+                                <input type="text" value="{{$node.comment}} -- {{$node.manager_uri}}" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <a type="button" class="btn btn-success" href="/message/list"><i class="glyphicon glyphicon-share-alt"></i> 返回 </a>
+                            <button type="button" class="btn btn-primary" name="add_consumer" data-link="/consumer/add?node_id={{$node.node_id}}&message_name={{$message.name}}"><i class="glyphicon glyphicon-plus"></i> 添加消费者 </button>
+                            <button onclick="Common.confirm('确定要重载该节点吗？', '/node/reload?node_id={{$node.node_id}}&message_name={{$message.name}}')" type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重载节点 </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="w10p">消息名称</th>
+                            <th class="w8p">Exchange</th>
+                            <th>消费接口</th>
+                            <th class="w80">RouteKey</th>
+                            <th class="w90">状态</th>
+                            <th class="w60">超时</th>
+                            <th class="w200">备注</th>
+                            <th class="w100">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{$message.name}}</td>
+                            <td>{{$message.mode}}</td>
+                            <td colspan="6" style="padding: 0">
+                                <table class="table table-hover table-bordered" style="border-width: 0 0 0 0;border:none;margin-bottom: 0px">
+                                    <tbody>
+                                    {{range $consumer := $consumers}}
+                                    <tr class="consumer_tr" id="consumer_{{$consumer.id}}" style="border:none;">
+                                        <td>{{$consumer.url}}</td>
+                                        <td style="width: 80px">{{$consumer.route_key}}</td>
+                                        <td style="width: 90px" class="center consumer_status">
+                                            <label class="text-info">waiting</label>
+                                        </td>
+                                        <td style="width: 60px" class="center">{{$consumer.timeout}}</td>
+                                        <td style="width: 200px">{{$consumer.comment}}</td>
+                                        <td style="width: 99px" class="center">
+                                            <a name="edit" class="glyphicon glyphicon-edit" data-link="/consumer/edit?node_id={{$node.node_id}}&message_name={{$message.name}}&consumer_id={{$consumer.id}}">修改</a>
+                                            <a onclick="Common.confirm('确定要删除吗？', '/consumer/delete?node_id={{$node.node_id}}&message_name={{$message.name}}&consumer_id={{$consumer.id}}')" class="remove glyphicon glyphicon-trash">删除</a>
+                                        </td>
+                                    </tr>
+                                    {{end}}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/modules/consumer.js"></script>
+<script type="text/javascript">
+    Consumer.bindFancyBox();
+    Consumer.status();
+    setInterval(function(){
+        Consumer.status();
+    },10000);
+</script>

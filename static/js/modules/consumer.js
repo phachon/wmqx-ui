@@ -8,10 +8,11 @@ var Consumer = {
         $('[name="edit"]').each(function () {
             
             $(this).fancybox({
+                padding: 12,
                 minWidth: 500,
-                minHeight: 480,
+                minHeight: 456,
                 width: '65%',
-                height: '57%',
+                height: '45%',
                 autoSize: false,
                 type: 'iframe',
                 href: $(this).attr('data-link')
@@ -20,10 +21,11 @@ var Consumer = {
 
         $('button[name="add_consumer"]').each(function () {
             $(this).fancybox({
+                padding: 12,
                 minWidth: 500,
-                minHeight: 480,
+                minHeight: 456,
                 width: '65%',
-                height: '57%',
+                height: '45%',
                 autoSize: false,
                 type: 'iframe',
                 href: $(this).attr('data-link')

@@ -19,12 +19,10 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary" name="add_message" data-link="/message/add?node_id={{$nodeId}}"><i class="glyphicon glyphicon-plus"></i> 添加消息 </button>
-                                <button type="button" class="btn btn-success" name="test_message" data-link="/message/test?node_id={{$nodeId}}" style="margin-left: 5px;"><i class="glyphicon glyphicon-send"></i> 测试消息 </button>
-                                <button onclick="Common.confirm('确定要重启该节点吗？', '/node/reload?node_id={{$nodeId}}')" type="button" class="btn btn-danger" style="margin-left: 5px;"><i class="glyphicon glyphicon-refresh"></i> 重启节点 </button>
-                            </div>
+                        <div class="col-md-8">
+                            <button type="button" class="btn btn-primary" name="add_message" data-link="/message/add?node_id={{$nodeId}}"><i class="glyphicon glyphicon-plus"></i> 添加消息 </button>
+                            <button type="button" class="btn btn-success" name="test_message" data-link="/message/test?node_id={{$nodeId}}"><i class="glyphicon glyphicon-send"></i> 测试消息 </button>
+                            <button onclick="Common.confirm('确定要重启该节点吗？', '/node/reload?node_id={{$nodeId}}')" type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重启节点 </button>
                         </div>
                     </form>
                 </div>
@@ -40,7 +38,7 @@
                             <th class="w8p">验证Token</th>
                             <th class="w20p">Token</th>
                             <th>备注</th>
-                            <th class="w10p">操作</th>
+                            <th class="w15p">操作</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -57,8 +55,9 @@
                             <td>{{$message.token}}</td>
                             <td>{{$message.comment}}</td>
                             <td class="center">
-                                <a data-link="/message/edit?node_id={{$nodeId}}&message_name={{$message.name}}" name="edit"><i class="glyphicon glyphicon-pencil"></i> 修改</a>
-                                <a onclick="Common.confirm('确定要删除吗？', '/message/delete?node_id={{$nodeId}}&message_name={{$message.name}}')"><i class="glyphicon glyphicon-remove"></i> 删除</a>
+                                <a href="/message/consumer?node_id={{$nodeId}}&message_name={{$message.name}}"><i class="glyphicon glyphicon-list"></i>消费者</a>
+                                <a data-link="/message/edit?node_id={{$nodeId}}&message_name={{$message.name}}" name="edit"><i class="glyphicon glyphicon-pencil"></i>修改</a>
+                                <a onclick="Common.confirm('确定要删除吗？', '/message/delete?node_id={{$nodeId}}&message_name={{$message.name}}')"><i class="glyphicon glyphicon-remove"></i>删除</a>
                             </td>
                         </tr>
                         {{end}}

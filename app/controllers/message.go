@@ -65,7 +65,7 @@ func (this *MessageController) List() {
 
 	messages, err := remotes.NewMessageByNode(defaultNode).GetMessages()
 	if err != nil {
-		this.viewError(err.Error(), "template")
+		this.viewError("wmqx 节点 "+defaultNode["node_id"]+" 请求失败, 请检查是否正常工作", "template")
 	}
 	this.Data["nodes"] = nodes
 	this.Data["node_id"] = nodeId
@@ -228,8 +228,40 @@ func (this *MessageController) Delete() {
 
 	err = remotes.NewMessageByNode(node).DeleteMessage(name)
 	if err != nil {
-		this.jsonError(err.Error())
+		this.jsonError("删除失败")
 	}
 
 	this.jsonSuccess("删除消息成功", nil, "/message/list?node_id="+nodeId)
+}
+
+func (this *MessageController) Consumer() {
+	nodeId := this.GetString("node_id", "")
+	name := this.GetString("message_name")
+
+	if nodeId == "" {
+		this.viewError("没有选择节点", "template")
+	}
+	if name == "" {
+		this.viewError("没有选择消息", "template")
+	}
+	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
+	if err != nil {
+		this.viewError("节点错误", "template")
+	}
+	if len(node) == 0 {
+		this.viewError("节点不存在", "template")
+	}
+	message, err := remotes.NewMessageByNode(node).GetMessageByName(name)
+	if err != nil {
+		this.viewError(err.Error(), "template")
+	}
+	consumers, err := remotes.NewMessageByNode(node).GetConsumersByName(name)
+	if err != nil {
+		this.viewError("查找消费者失败", "template")
+	}
+
+	this.Data["message"] = message
+	this.Data["consumers"] = consumers
+	this.Data["node"] = node
+	this.viewLayout("message/consumer", "template")
 }

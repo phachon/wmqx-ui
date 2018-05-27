@@ -103,7 +103,7 @@ func initRouter() {
 	beego.AutoRouter(&controllers.UserController{})
 	beego.AutoRouter(&controllers.NodeController{})
 	beego.AutoRouter(&controllers.MessageController{})
-	//beego.AutoRouter(&controllers.ConsumerController{})
+	beego.AutoRouter(&controllers.ConsumerController{})
 	//beego.AutoRouter(&controllers.LogController{})
 	beego.AutoRouter(&controllers.ProfileController{})
 	//beego.AutoRouter(&controllers.NoticeController{})

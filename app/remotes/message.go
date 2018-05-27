@@ -14,7 +14,7 @@ var (
 	messageStatusPath = "/message/status"
 	messageListPath = "/message/list"
 	getMessageByNamePath = "/message/getMessageByName"
-	getConsumerByNamePath = "/message/getConsumerByName"
+	getConsumersByNamePath = "/message/getConsumersByName"
 )
 
 func NewMessageByNode(node map[string]string) *Message {
@@ -171,4 +171,36 @@ func (m *Message) GetMessageByName(name string) (message map[string]interface{},
 	}
 
 	return v["data"].(map[string]interface{}), nil
+}
+
+func (m *Message) GetConsumersByName(name string) (consumers []map[string]interface{}, err error) {
+
+	url := fmt.Sprintf("%s%s", m.ManagerUri, getConsumersByNamePath)
+
+	headerValue := map[string]string{
+		m.TokenHeaderName: m.Token,
+	}
+	queryValue := map[string]string{
+		"name": name,
+	}
+
+	body, code, err := utils.Request.HttpGet(url, queryValue, headerValue)
+	if err != nil {
+		return
+	}
+	if len(body) == 0 {
+		return consumers, errors.New(fmt.Sprintf("request wmqx failed, httpStatus: %d", code))
+	}
+	v := map[string]interface{}{}
+	if json.Unmarshal(body, &v) != nil {
+		return
+	}
+	if v["code"].(float64) == 0 {
+		return consumers, errors.New(fmt.Sprintf(v["message"].(string)))
+	}
+	for _, items := range v["data"].([]interface{}) {
+		consumers = append(consumers, items.(map[string]interface{}))
+	}
+
+	return
 }
