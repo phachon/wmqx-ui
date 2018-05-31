@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	confPath = flag.String("conf", "conf/default.conf", "please set codepub conf path")
+	confPath = flag.String("conf", "conf/wmqx-ui.conf", "please set wmqx-ui conf path")
 )
 
 var (
@@ -41,7 +41,7 @@ __        __  __  __    ___   __  __          _   _   ___
 `+
 "Author: phachon\r\n"+
 "Version: "+version+"\r\n"+
-"Link: github.com/phachon/wmqx-ui"
+"Link: https://github.com/phachon/wmqx-ui"
 	fg.Println(logo)
 }
 
