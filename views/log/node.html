@@ -1,21 +1,22 @@
 <div class="container">
-    <div class="row">
+    <div class="row">{{$nodes := .nodes}}{{$nodeId := .node_id}}
         <div class="col-md-12">
             <div class="panel-body" style="padding: 15px 0;">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="javascript:;">Wmq日志</a></li>
+                    <li><a href="/log/system">操作日志</a></li>
+                    <li class="active"><a href="/log/node">节点日志</a></li>
                 </ul>
             </div>
             <div class="panel-body" style="padding-left: 9px;">
                 <div class="row">
-                    <form action="/log/list" method="post">
-                        <div class="col-md-3">
+                    <form action="/log/node" method="post">
+                        <div class="col-md-4">
                             <div class="input-group">
                                 <span class="input-group-addon">节点</span>
                                 <select class="form-control" name="node_id">
-                                    {{range $node := .nodes}}
-                                    <option value="{{$node.Id}}" {{if eq $node.Id $.node_id}} selected {{end}}>{{$node.Ip}}:{{$node.ManagerPort}}</option>
-                                    {{end}}
+                                {{range $node := $nodes}}
+                                    <option value="{{$node.node_id}}" {{if eq $node.node_id $nodeId}} selected {{end}}>{{$node.comment}} -- {{$node.manager_uri}}</option>
+                                {{end}}
                                 </select>
                             </div>
                         </div>
@@ -23,7 +24,8 @@
                             <div class="input-group">
                                 <span class="input-group-addon">日志类型</span>
                                 <select class="form-control" name="type">
-                                    <option value="errror" {{if eq .log_type "error"}} selected {{end}}>ERROR</option>
+                                    <option value="">全部</option>
+                                    <option value="error" {{if eq .log_type "error"}} selected {{end}}>ERROR</option>
                                     <option value="info" {{if eq .log_type "info"}} selected {{end}}>INFO</option>
                                     <option value="debug" {{if eq .log_type "debug"}} selected {{end}}>DEBUG</option>
                                 </select>
@@ -37,8 +39,8 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
+                        <div class="col-md-3">
+                            <div class="input-group">
                                 <button type="button" class="btn btn-primary" name="log_download" data-link="/log/download?node_id={{.node_id}}"><i class="glyphicon glyphicon-download-alt"></i> 下载日志 </button>
                             </div>
                         </div>
@@ -50,30 +52,25 @@
                     <table class="table table-bordered">
                         <thead>
                         <tr>
-                            <th class="w13p">Time</th>
+                            <th class="w15p">Time</th>
                             <th class="w8p">Level</th>
-                            <th>Content</th>
-                            <th class="w10p">Milliseconds</th>
+                            <th>Body</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{range $log := .logs}}
                         <tr>
-                            <td class="center">{{dateFormat $log.Timestamp "Y-m-d H:i:s"}}</td>
+                            <td class="center">{{$log.millisecond_format}}</td>
                             <td class="center">
-                                {{if eq $log.LevelString "INFO"}}
-                                <span class="label label-info">{{$log.LevelString}}</span>
-                                {{else if eq $log.LevelString "ERROR"}}
-                                <span class="label label-danger">{{$log.LevelString}}</span>
-                                {{else if eq $log.LevelString "DEBUG"}}
-                                <span class="label label-primary">{{$log.LevelString}}</span>
+                                {{if eq $log.level_string "Info"}}
+                                <span class="label label-info">{{$log.level_string}}</span>
+                                {{else if eq $log.level_string "Error"}}
+                                <span class="label label-danger">{{$log.level_string}}</span>
+                                {{else if eq $log.level_string "Debug"}}
+                                <span class="label label-primary">{{$log.level_string}}</span>
                                 {{end}}
                             </td>
-                            <td>
-                                <a data-toggle="collapse" data-target="#{{$log.Timestamp}}_{{$log.Milliseconds}}">{{$log.Content}}</a>
-                                <div id="{{$log.Timestamp}}_{{$log.Milliseconds}}" class="collapse"><strong>{{$log.FieldsString}}</strong></div>
-                            </td>
-                            <td class="center"><label class="text-danger">{{$log.Milliseconds}}</label></td>
+                            <td>{{$log.body}}</td>
                         </tr>
                         {{end}}
                         </tbody>
@@ -83,6 +80,7 @@
             </div>
         </div>
     </div>
+    <br>
 </div>
 <script src="/static/js/modules/log.js"></script>
 <script type="text/javascript">

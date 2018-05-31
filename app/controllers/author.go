@@ -24,7 +24,7 @@ func (this *AuthorController) Login()  {
 
 	user, err := models.UserModel.GetUserByName(username)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("获取用户失败："+err.Error())
 		this.jsonError("登录出错")
 	}
 	if len(user) == 0 {
@@ -45,11 +45,15 @@ func (this *AuthorController) Login()  {
 	passport := beego.AppConfig.String("author.passport")
 	this.Ctx.SetCookie(passport, passportValue, 3600)
 
+	this.Ctx.Request.PostForm.Del("password")
+
+	this.InfoLog("登录成功")
 	this.jsonSuccess("登录成功", nil, "/main/index")
 }
 
 //logout
 func (this *AuthorController) Logout(){
+	this.InfoLog("退出成功")
 	passport := beego.AppConfig.String("author.passport")
 	this.Ctx.SetCookie(passport, "")
 	this.SetSession("author", "")

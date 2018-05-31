@@ -12,5 +12,17 @@ var Log = {
 				href: $(this).attr('data-link')
 			});
 		});
+        $('a[name="info"]').each(function () {
+            $(this).fancybox({
+				padding: 12,
+                minWidth: 400,
+                minHeight: 310,
+                width: '60%',
+                height: '40%',
+                autoSize: false,
+                type: 'iframe',
+                href: $(this).attr('data-link')
+            });
+        });
 	}
 };

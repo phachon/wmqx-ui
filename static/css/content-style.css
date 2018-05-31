@@ -19,6 +19,11 @@ th {
     background:#efefef;
 }
 
+td {
+    word-wrap:break-word;
+    word-break:break-all;
+}
+
 .center {text-align:center;}
 
 .panel-heading {
@@ -103,9 +108,12 @@ th {
 
 .w50{width:50px;}
 .w60{width:60px;}
+.w65{width:65px;}
 .w70{width:70px;}
 .w79{width:79px;}
 .w80{width:80px;}
+.w85{width:85px;}
+.w88{width:88px;}
 .w90{width:90px;}
 .w100{width:100px;}
 .w110{width:110px;}

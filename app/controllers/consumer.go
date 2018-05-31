@@ -50,6 +50,7 @@ func (this *ConsumerController) Save() {
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点 "+nodeId+" 失败: "+err.Error())
 		this.jsonError("节点错误")
 	}
 	if len(node) == 0 {
@@ -65,9 +66,10 @@ func (this *ConsumerController) Save() {
 		"comment": comment,
 	})
 	if err != nil {
+		this.ErrorLog("添加消费者失败: "+err.Error())
 		this.jsonError("添加消息失败")
 	}
-
+	this.InfoLog("添加消费者成功")
 	redirect := fmt.Sprintf("/message/consumer?node_id=%s&message_name=%s", nodeId, messageName)
 	this.jsonSuccess("添加消息成功", nil, redirect)
 }
@@ -84,16 +86,17 @@ func (this *ConsumerController) Edit() {
 	}
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
 		this.viewError("节点错误", "default")
 	}
 	if len(node) == 0 {
 		this.viewError("节点不存在", "default")
 	}
 
-
 	consumer, err := remotes.NewConsumerByNode(node, messageName).GetConsumerByConsumerId(consumerId)
 	if err != nil {
-		this.viewError("获取消费者信息错误", "default")
+		this.ErrorLog("获取消费者失败: "+err.Error())
+		this.viewError("获取消费者错误", "default")
 	}
 	this.Data["node_id"] = nodeId
 	this.Data["message_name"] = messageName
@@ -135,6 +138,7 @@ func (this *ConsumerController) Modify() {
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
 		this.jsonError("节点错误")
 	}
 	if len(node) == 0 {
@@ -150,9 +154,10 @@ func (this *ConsumerController) Modify() {
 		"comment": comment,
 	})
 	if err != nil {
+		this.ErrorLog("修改消费者失败: "+err.Error())
 		this.jsonError("修改消费者失败")
 	}
-
+	this.InfoLog("修改消费者 "+consumerId+" 成功")
 	redirect := fmt.Sprintf("/message/consumer?node_id=%s&message_name=%s", nodeId, messageName)
 	this.jsonSuccess("修改消费者成功", nil, redirect)
 }
@@ -176,6 +181,7 @@ func (this *ConsumerController) Delete() {
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点 "+nodeId+" 失败: "+err.Error())
 		this.jsonError("节点错误")
 	}
 	if len(node) == 0 {
@@ -184,9 +190,10 @@ func (this *ConsumerController) Delete() {
 
 	err = remotes.NewConsumerByNode(node, messageName).DeleteConsumerByConsumerId(consumerId)
 	if err != nil {
+		this.ErrorLog("删除消费者失败: "+err.Error())
 		this.jsonError("删除消费者失败")
 	}
-
+	this.InfoLog("删除消费者 "+consumerId+" 成功")
 	redirect := fmt.Sprintf("/message/consumer?node_id=%s&message_name=%s", nodeId, messageName)
 	this.jsonSuccess("删除消费者成功", nil, redirect)
 }
@@ -210,6 +217,7 @@ func (this *ConsumerController) Status() {
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点 "+nodeId+" 失败: "+err.Error())
 		this.jsonError("节点错误")
 	}
 	if len(node) == 0 {
@@ -218,6 +226,7 @@ func (this *ConsumerController) Status() {
 
 	status, err := remotes.NewConsumerByNode(node, messageName).GetStatusByConsumerId(consumerId)
 	if err != nil {
+		this.ErrorLog("获取消费者状态失败: "+err.Error())
 		this.jsonError("获取消费者状态失败")
 	}
 

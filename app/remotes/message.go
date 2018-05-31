@@ -15,6 +15,7 @@ var (
 	messageListPath = "/message/list"
 	getMessageByNamePath = "/message/getMessageByName"
 	getConsumersByNamePath = "/message/getConsumersByName"
+	messageReload = "/message/reload"
 )
 
 func NewMessageByNode(node map[string]string) *Message {
@@ -203,4 +204,33 @@ func (m *Message) GetConsumersByName(name string) (consumers []map[string]interf
 	}
 
 	return
+}
+
+func (m *Message) ReloadMessage(name string) (err error) {
+
+	url := fmt.Sprintf("%s%s", m.ManagerUri, messageReload)
+
+	headerValue := map[string]string{
+		m.TokenHeaderName: m.Token,
+	}
+	queryValue := map[string]string{
+		"name": name,
+	}
+
+	body, code, err := utils.Request.HttpGet(url, queryValue, headerValue)
+	if err != nil {
+		return
+	}
+	if len(body) == 0 {
+		return errors.New(fmt.Sprintf("request wmqx failed, httpStatus: %d", code))
+	}
+	v := map[string]interface{}{}
+	if json.Unmarshal(body, &v) != nil {
+		return
+	}
+	if v["code"].(float64) == 0 {
+		return errors.New(fmt.Sprintf(v["message"].(string)))
+	}
+
+	return nil
 }

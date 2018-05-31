@@ -63,6 +63,10 @@ func (this *MessageController) List() {
 		}
 	}
 
+	if len(defaultNode) == 0 {
+		this.viewError("没有选择节点", "template")
+	}
+
 	messages, err := remotes.NewMessageByNode(defaultNode).GetMessages()
 	if err != nil {
 		this.viewError("wmqx 节点 "+defaultNode["node_id"]+" 请求失败, 请检查是否正常工作", "template")
@@ -104,6 +108,7 @@ func (this *MessageController) Save() {
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
 		this.jsonError("节点错误")
 	}
 	if len(node) == 0 {
@@ -119,9 +124,10 @@ func (this *MessageController) Save() {
 		"token": token,
 	})
 	if err != nil {
-		this.jsonError(err.Error())
+		this.ErrorLog("添加消息失败: "+err.Error())
+		this.jsonError("添加消息失败")
 	}
-
+	this.InfoLog("添加消息成功")
 	this.jsonSuccess("添加消息成功", nil, "/message/list?node_id="+nodeId)
 }
 
@@ -138,6 +144,7 @@ func (this *MessageController) Edit() {
 	}
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
 		this.viewError("节点错误", "default")
 	}
 	if len(node) == 0 {
@@ -146,7 +153,8 @@ func (this *MessageController) Edit() {
 
 	message, err := remotes.NewMessageByNode(node).GetMessageByName(name)
 	if err != nil {
-		this.viewError(err.Error(), "default")
+		this.ErrorLog("获取消息失败: "+err.Error())
+		this.viewError("获取消息失败", "default")
 	}
 
 	this.Data["message"] = message
@@ -185,6 +193,7 @@ func (this *MessageController) Modify() {
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
 		this.jsonError("节点错误")
 	}
 	if len(node) == 0 {
@@ -200,9 +209,11 @@ func (this *MessageController) Modify() {
 		"token": token,
 	})
 	if err != nil {
-		this.jsonError(err.Error())
+		this.ErrorLog("修改消息 "+name+" 失败: "+err.Error())
+		this.jsonError("修改消息失败")
 	}
 
+	this.InfoLog("修改消息 "+name+" 成功")
 	this.jsonSuccess("修改消息成功", nil, "/message/list?node_id="+nodeId)
 }
 
@@ -220,6 +231,7 @@ func (this *MessageController) Delete() {
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
 		this.jsonError("节点错误")
 	}
 	if len(node) == 0 {
@@ -228,9 +240,10 @@ func (this *MessageController) Delete() {
 
 	err = remotes.NewMessageByNode(node).DeleteMessage(name)
 	if err != nil {
+		this.ErrorLog("删除消息 "+name+" 失败: "+err.Error())
 		this.jsonError("删除失败")
 	}
-
+	this.InfoLog("删除消息 "+name+" 成功: "+err.Error())
 	this.jsonSuccess("删除消息成功", nil, "/message/list?node_id="+nodeId)
 }
 
@@ -246,6 +259,7 @@ func (this *MessageController) Consumer() {
 	}
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
 		this.viewError("节点错误", "template")
 	}
 	if len(node) == 0 {
@@ -253,10 +267,12 @@ func (this *MessageController) Consumer() {
 	}
 	message, err := remotes.NewMessageByNode(node).GetMessageByName(name)
 	if err != nil {
-		this.viewError(err.Error(), "template")
+		this.ErrorLog("获取消息 "+name+" 失败: "+err.Error())
+		this.viewError("获取消息失败", "template")
 	}
 	consumers, err := remotes.NewMessageByNode(node).GetConsumersByName(name)
 	if err != nil {
+		this.ErrorLog("获取消息 "+name+" 消费者失败: "+err.Error())
 		this.viewError("查找消费者失败", "template")
 	}
 
@@ -264,4 +280,34 @@ func (this *MessageController) Consumer() {
 	this.Data["consumers"] = consumers
 	this.Data["node"] = node
 	this.viewLayout("message/consumer", "template")
+}
+
+func (this *MessageController) Reload() {
+
+	nodeId := this.GetString("node_id", "")
+	name := this.GetString("message_name")
+
+	if nodeId == "" {
+		this.jsonError("没有选择节点")
+	}
+	if name == "" {
+		this.jsonError("消息名称不能为空")
+	}
+
+	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
+	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
+		this.jsonError("节点错误")
+	}
+	if len(node) == 0 {
+		this.jsonError("节点不存在")
+	}
+
+	err = remotes.NewMessageByNode(node).ReloadMessage(name)
+	if err != nil {
+		this.ErrorLog("重载消息" +name+ "失败")
+		this.jsonError("重载失败")
+	}
+	this.InfoLog("重载消息" +name+ "成功")
+	this.jsonSuccess("重载消息成功", nil, "/message/consumer?node_id="+nodeId+"&message_name="+name)
 }

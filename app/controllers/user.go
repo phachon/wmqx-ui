@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 	"wmqx-ui/app/models"
-	"github.com/astaxie/beego"
 	"fmt"
 )
 
@@ -30,6 +29,7 @@ func (this *UserController) List() {
 		users, err = models.UserModel.GetUsersByLimit(limit, number)
 	}
 	if err != nil {
+		this.ErrorLog("查找用户失败: "+err.Error())
 		this.viewError(err.Error(), "/user/list")
 	}
 
@@ -66,7 +66,7 @@ func (this *UserController) Save() {
 
 	isExists, err := models.UserModel.HasUsername(username)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("查找用户 "+username+" 失败: "+err.Error())
 		this.jsonError("添加用户失败！")
 	}
 	if isExists {
@@ -85,10 +85,11 @@ func (this *UserController) Save() {
 
 	_, err = models.UserModel.Insert(userValue)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("添加用户失败: "+err.Error())
 		this.jsonError("添加用户失败！")
 	}
 
+	this.InfoLog("添加用户成功")
 	this.jsonSuccess("添加用户成功", nil, "/user/list")
 }
 
@@ -101,6 +102,7 @@ func (this *UserController) Edit() {
 
 	user, err := models.UserModel.GetUserByUserId(userId)
 	if err != nil {
+		this.ErrorLog("查找用户 "+userId+" 失败: "+err.Error())
 		this.viewError("用户不存在", "default", "/user/list")
 	}
 	if user["role"] == fmt.Sprintf("%d", models.USER_ROLE_ROOT) {
@@ -138,10 +140,10 @@ func (this *UserController) Modify() {
 
 	_, err := models.UserModel.Update(userId, userValue)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("修改用户 "+userId+" 失败: "+err.Error())
 		this.jsonError("修改用户失败！")
 	}
-
+	this.InfoLog("修改用户 "+userId+" 成功")
 	this.jsonSuccess("修改用户成功", nil, "/user/list")
 }
 
@@ -154,6 +156,7 @@ func (this *UserController) Node() {
 
 	user, err := models.UserModel.GetUserByUserId(userId)
 	if err != nil {
+		this.ErrorLog("查找用户 "+userId+" 失败: "+err.Error())
 		this.viewError("用户不存在", "default", "/user/list")
 	}
 	if user["role"] == fmt.Sprintf("%d", models.USER_ROLE_ROOT) {
@@ -162,12 +165,12 @@ func (this *UserController) Node() {
 
 	nodes, err := models.NodeModel.GetNodes()
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("查找节点失败: "+err.Error())
 		this.viewError("查找节点失败", "default")
 	}
 	userNodes, err := models.UserNodeModel.GetUserNodeByUserId(userId)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("查找用户 "+userId+" 节点失败: "+err.Error())
 		this.viewError("查找节点失败", "default")
 	}
 	for _, node := range nodes {
@@ -198,13 +201,13 @@ func (this *UserController) Privilege() {
 
 	_, err := models.UserModel.GetUserByUserId(userId)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("查找用户 "+userId+" 失败: "+err.Error())
 		this.jsonError("用户不存在", "default", "/user/list")
 	}
 
 	err = models.UserNodeModel.DeleteUserNodeByUserId(userId)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("删除用户 "+userId+" 节点失败: "+err.Error())
 		this.jsonError("节点授权失败")
 	}
 
@@ -219,10 +222,11 @@ func (this *UserController) Privilege() {
 	}
 	_, err = models.UserNodeModel.InsertBatch(userNodes)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("插入用户 "+userId+" 节点失败: "+err.Error())
 		this.jsonError("节点授权失败")
 	}
 
+	this.InfoLog("用户 "+userId+"节点授权成功")
 	this.jsonSuccess("节点授权成功", nil, "/user/list")
 }
 
@@ -236,7 +240,7 @@ func (this *UserController) Remove() {
 
 	user, err := models.UserModel.GetUserByUserId(userId)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("查找用户 "+userId+" 失败: "+err.Error())
 		this.jsonError("用户不存在！")
 	}
 	if len(user) == 0 {
@@ -250,9 +254,9 @@ func (this *UserController) Remove() {
 
 	_, err = models.UserModel.Update(userId, userValue)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("删除用户 "+userId+" 失败: "+err.Error())
 		this.jsonError("删除用户失败！")
 	}
-
+	this.InfoLog("删除用户 "+userId+" 成功")
 	this.jsonSuccess("删除用户成功", nil, "/user/list")
 }

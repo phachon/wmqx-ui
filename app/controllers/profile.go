@@ -3,7 +3,6 @@ package controllers
 import (
 	"strings"
 	"wmqx-ui/app/models"
-	"github.com/astaxie/beego"
 )
 
 type ProfileController struct {
@@ -32,13 +31,13 @@ func (this *ProfileController) Save() {
 	})
 
 	if err != nil {
-		beego.Error(err.Error())
+		this.ErrorLog("更新信息失败: "+err.Error())
 		this.jsonError("更新信息失败")
 	}
 
 	this.User["email"] = email
 	this.User["mobile"] = mobile
-
+	this.InfoLog("更新信息成功")
 	this.jsonSuccess("更新信息成功", nil, "/profile/index")
 }
 
@@ -74,9 +73,9 @@ func (this *ProfileController) Savepass() {
 	this.Ctx.Request.PostForm.Del("pwd_confirm")
 
 	if err != nil {
-		beego.Error(err.Error())
+		this.ErrorLog("修改密码失败: "+err.Error())
 		this.jsonError("修改密码失败")
 	}
-
+	this.InfoLog("修改密码成功")
 	this.jsonSuccess("修改密码成功", nil, "/profile/repass")
 }

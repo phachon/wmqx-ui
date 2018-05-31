@@ -16,9 +16,9 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <a type="button" class="btn btn-success" href="/message/list"><i class="glyphicon glyphicon-share-alt"></i> 返回 </a>
+                            <a type="button" class="btn btn-success" href="/message/list"><i class="glyphicon glyphicon-share-alt"></i> 返回消息列表 </a>
                             <button type="button" class="btn btn-primary" name="add_consumer" data-link="/consumer/add?node_id={{$node.node_id}}&message_name={{$message.name}}"><i class="glyphicon glyphicon-plus"></i> 添加消费者 </button>
-                            <button onclick="Common.confirm('确定要重载该节点吗？', '/node/reload?node_id={{$node.node_id}}&message_name={{$message.name}}')" type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重载节点 </button>
+                            <button onclick="Common.confirm('确定要重载消息 [{{$message.name}}] 吗？', '/message/reload?node_id={{$node.node_id}}&message_name={{$message.name}}')" type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重载消息 </button>
                         </div>
                     </form>
                 </div>
@@ -29,11 +29,11 @@
                         <thead>
                         <tr>
                             <th class="w10p">消息名称</th>
-                            <th class="w8p">Exchange</th>
+                            <th class="w7p">Exchange</th>
                             <th>消费接口</th>
-                            <th class="w80">RouteKey</th>
+                            <th class="w90">RouteKey</th>
                             <th class="w90">状态</th>
-                            <th class="w60">超时</th>
+                            <th class="w70">超时</th>
                             <th class="w200">备注</th>
                             <th class="w100">操作</th>
                         </tr>
@@ -48,12 +48,12 @@
                                     {{range $consumer := $consumers}}
                                     <tr class="consumer_tr" id="consumer_{{$consumer.id}}" style="border:none;">
                                         <td>{{$consumer.url}}</td>
-                                        <td style="width: 80px">{{$consumer.route_key}}</td>
-                                        <td style="width: 90px" class="center consumer_status">
+                                        <td class="w90">{{$consumer.route_key}}</td>
+                                        <td class="w90 center consumer_status">
                                             <label class="text-info">waiting</label>
                                         </td>
-                                        <td style="width: 60px" class="center">{{$consumer.timeout}}</td>
-                                        <td style="width: 200px">{{$consumer.comment}}</td>
+                                        <td class="w70 center">{{$consumer.timeout}}</td>
+                                        <td class="w200">{{$consumer.comment}}</td>
                                         <td style="width: 99px" class="center">
                                             <a name="edit" class="glyphicon glyphicon-edit" data-link="/consumer/edit?node_id={{$node.node_id}}&message_name={{$message.name}}&consumer_id={{$consumer.id}}">修改</a>
                                             <a onclick="Common.confirm('确定要删除吗？', '/consumer/delete?node_id={{$node.node_id}}&message_name={{$message.name}}&consumer_id={{$consumer.id}}')" class="remove glyphicon glyphicon-trash">删除</a>

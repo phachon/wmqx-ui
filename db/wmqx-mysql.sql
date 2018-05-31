@@ -53,3 +53,24 @@ CREATE TABLE `wmqx_node` (
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`node_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------
+-- wmqx log table
+-- --------------------------------
+DROP TABLE IF EXISTS `wmqx_log`;
+CREATE TABLE `wmqx_log` (
+  `log_id` int(10) NOT NULL AUTO_INCREMENT COMMENT '日志id',
+  `level` tinyint(3) NOT NULL DEFAULT '6' COMMENT '日志级别',
+  `controller` char(100) NOT NULL DEFAULT '' COMMENT '控制器',
+  `action` char(100) NOT NULL DEFAULT '' COMMENT '动作',
+  `get` text NOT NULL COMMENT 'get参数',
+  `post` text NOT NULL COMMENT 'post参数',
+  `message` varchar(255) NOT NULL DEFAULT '' COMMENT '信息',
+  `ip` char(100) NOT NULL DEFAULT '' COMMENT 'ip地址',
+  `user_agent` char(200) NOT NULL DEFAULT '' COMMENT '用户代理',
+  `referer` char(100) NOT NULL DEFAULT '' COMMENT 'referer',
+  `user_id` int(10) NOT NULL DEFAULT '0' COMMENT '帐号id',
+  `username` char(100) NOT NULL DEFAULT '' COMMENT '帐号名',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`log_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='行为日志表';

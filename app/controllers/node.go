@@ -4,7 +4,6 @@ import (
 	"strings"
 	"wmqx-ui/app/models"
 	"time"
-	"github.com/astaxie/beego"
 	"wmqx-ui/app/remotes"
 )
 
@@ -37,6 +36,7 @@ func (this *NodeController) List() {
 		nodes, err = models.NodeModel.GetNodesByLimit(limit, number)
 	}
 	if err != nil {
+		this.ErrorLog("获取节点失败："+err.Error())
 		this.viewError(err.Error(), "/node/list")
 	}
 	this.Data["nodes"] = nodes
@@ -82,10 +82,10 @@ func (this *NodeController) Save() {
 	}
 	_, err := models.NodeModel.Insert(nodeValue)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("添加节点失败: "+err.Error())
 		this.jsonError("添加节点失败！")
 	}
-
+	this.InfoLog("添加节点成功")
 	this.jsonSuccess("添加节点成功", nil, "/node/list")
 }
 
@@ -98,7 +98,7 @@ func (this *NodeController) Edit() {
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("查找节点 "+nodeId+" 失败: "+err.Error())
 		this.viewError("节点不存在", "/node/list")
 	}
 
@@ -145,9 +145,10 @@ func (this *NodeController) Modify() {
 
 	_, err := models.NodeModel.Update(nodeId, nodeValue)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("修改节点 "+nodeId+" 失败: "+err.Error())
 		this.jsonError("修改节点失败！")
 	}
+	this.InfoLog("修改节点 "+nodeId+" 成功")
 	this.jsonSuccess("修改节点成功", nil, "/node/list")
 }
 
@@ -170,10 +171,10 @@ func (this *NodeController) Delete() {
 
 	_, err = models.NodeModel.Update(nodeId, nodeValue)
 	if err != nil {
-		beego.Error(err)
+		this.ErrorLog("删除节点 "+nodeId+" 失败: "+err.Error())
 		this.jsonError("删除节点失败！")
 	}
-
+	this.InfoLog("删除节点 "+nodeId+" 成功")
 	this.jsonSuccess("删除节点成功", nil, "/node/list")
 }
 
@@ -185,17 +186,44 @@ func (this *NodeController) Message() {
 	}
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
-	if err != nil || len(node) == 0 {
+	if err != nil {
+		this.ErrorLog("查找节点 "+nodeId+" 失败: "+err.Error())
+		this.viewError("节点不存在！", "default")
+	}
+	if len(node) == 0 {
 		this.viewError("节点不存在！", "default")
 	}
 
-	remoteMessage := remotes.NewMessageByNode(node)
-
-	messages, err := remoteMessage.GetMessages()
+	messages, err := remotes.NewMessageByNode(node).GetMessages()
 	if err != nil {
 		this.viewError(err.Error(), "default")
 	}
 
 	this.Data["messages"] = messages
 	this.viewLayout("node/message", "default")
+}
+
+func (this *NodeController) Reload() {
+
+	nodeId := this.GetString("node_id", "")
+	if nodeId == "" {
+		this.jsonError("节点不存在！")
+	}
+
+	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
+	if err != nil{
+		this.ErrorLog("查找节点 "+nodeId+" 失败: "+err.Error())
+		this.jsonError("节点不存在！")
+	}
+	if len(node) == 0 {
+		this.jsonError("节点不存在！")
+	}
+
+	err = remotes.NewSystemByNode(node).ReloadSystem()
+	if err != nil {
+		this.ErrorLog("重载节点 "+nodeId+" 失败")
+		this.jsonError("重载失败！")
+	}
+	this.InfoLog("重载节点 "+nodeId+" 成功")
+	this.jsonSuccess("重载节点成功", nil, "message/list?node_id="+nodeId)
 }

@@ -1,0 +1,86 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-body" style="padding: 15px 0;">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="/log/system">操作日志</a></li>
+                    <li><a href="/log/node">节点日志</a></li>
+                </ul>
+            </div>
+            <div class="panel-body" style="padding-left: 9px;">
+                <div class="row">
+                    <form action="/log/system" method="post">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-addon"> 日志级别</span>
+                                <select class="form-control" name="level">
+                                    <option value="">全部</option>
+                                    <option value="7" {{if eq .level "7"}} selected {{end}}>DEBUG</option>
+                                    <option value="6" {{if eq .level "6"}} selected {{end}}>INFO</option>
+                                    <option value="4" {{if eq .level "4"}} selected {{end}}>WARNING</option>
+                                    <option value="3" {{if eq .level "3"}} selected {{end}}>ERROR</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-addon"> 用户名 </span>
+                                <input class="form-control" name="username" type="text" value="{{.username}}" placeholder="用户名">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <input class="form-control" name="message" type="text" value="{{.message}}" placeholder="描述">
+                                <span class="input-group-btn">
+				                <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+				                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="w7p">ID</th>
+                        <th class="w10p">级别</th>
+                        <th class="w9p">用户</th>
+                        <th>描述</th>
+                        <th class="w15p">动作</th>
+                        <th class="w10p">IP</th>
+                        <th class="w15p">时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{range $log := .logs}}
+                    <tr>
+                        <td class="center">{{$log.log_id}}</td>
+                        <td class="center">
+                        {{if eq $log.level "3"}}<span class="label label-danger">ERROR</span>{{end}}
+                        {{if eq $log.level "4"}}<span class="label label-warning">WARNING</span>{{end}}
+                        {{if eq $log.level "6"}}<span class="label label-info">INFO</span>{{end}}
+                        {{if eq $log.level "7"}}<span class="label label-debug">DEBUG</span>{{end}}
+                        </td>
+                        <td class="center">{{$log.username}}</td>
+                        <td><a name="info" data-link="/log/info?log_id={{$log.log_id}}">{{$log.message}}</a></td>
+                        <td>{{$log.controller}}/{{$log.action}}</td>
+                        <td class="center">{{$log.ip}}</td>
+                        <td class="center">
+                        {{dateFormat $log.create_time "Y-m-d H:i:s"}}
+                        </td>
+                    </tr>
+                    {{end}}
+                    </tbody>
+                </table>
+                <div class="panel-footer">
+                {{template "paginator/default.html" .}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/modules/log.js"></script>
+<script type="text/javascript">
+    Log.bindFancyBox();
+</script>

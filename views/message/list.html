@@ -9,21 +9,21 @@
             <div class="panel-body" style="padding-left: 9px;">
                 <div class="row">
                     <form>
-                        <div class="col-md-4">
-                            <div class="input-group">
-                                <span class="input-group-addon">选择节点</span>
-                                <select class="form-control" onchange="Message.node(this)">
-                                    {{range $node := $nodes}}
-                                    <option value="{{$node.node_id}}" {{if eq $node.node_id $nodeId}} selected {{end}}>{{$node.comment}} -- {{$node.manager_uri}}</option>
-                                    {{end}}
-                                </select>
-                            </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-addon">选择节点</span>
+                            <select class="form-control" onchange="Message.node(this)">
+                                {{range $node := $nodes}}
+                                <option value="{{$node.node_id}}" {{if eq $node.node_id $nodeId}} selected {{end}}>{{$node.comment}} -- {{$node.manager_uri}}</option>
+                                {{end}}
+                            </select>
                         </div>
-                        <div class="col-md-8">
-                            <button type="button" class="btn btn-primary" name="add_message" data-link="/message/add?node_id={{$nodeId}}"><i class="glyphicon glyphicon-plus"></i> 添加消息 </button>
-                            <button type="button" class="btn btn-success" name="test_message" data-link="/message/test?node_id={{$nodeId}}"><i class="glyphicon glyphicon-send"></i> 测试消息 </button>
-                            <button onclick="Common.confirm('确定要重启该节点吗？', '/node/reload?node_id={{$nodeId}}')" type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重启节点 </button>
-                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <button type="button" class="btn btn-primary" name="add_message" data-link="/message/add?node_id={{$nodeId}}"><i class="glyphicon glyphicon-plus"></i> 添加消息 </button>
+                        <button type="button" class="btn btn-success" name="test_message" data-link="/message/test?node_id={{$nodeId}}"><i class="glyphicon glyphicon-send"></i> 测试消息 </button>
+                        <button onclick="Common.confirm('确定要重载该节点的所有消息吗？', '/node/reload?node_id={{$nodeId}}')" type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重载节点 </button>
+                    </div>
                     </form>
                 </div>
             </div>

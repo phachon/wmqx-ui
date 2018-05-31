@@ -7,6 +7,7 @@ import (
 	"wmqx-ui/app/utils"
 	"fmt"
 	"wmqx-ui/app/models"
+	"time"
 )
 
 type BaseController struct {
@@ -219,4 +220,51 @@ func (this *BaseController) roleIsAdmin() bool {
 
 func (this *BaseController) roleIsUser() bool {
 	return this.User["role"] == fmt.Sprintf("%d", models.USER_ROLE_USER)
+}
+
+// insert action log
+func (this *BaseController) RecordLog(message string, level int) {
+	controllerName, actionName := this.GetControllerAndAction()
+	controllerName = strings.ToLower(controllerName[0 : len(controllerName)-10])
+	methodName := strings.ToLower(actionName)
+	userAgent := this.Ctx.Request.UserAgent()
+	referer := this.Ctx.Request.Referer()
+	getParams := this.Ctx.Request.URL.String()
+	this.Ctx.Request.ParseForm()
+	postParamsMap := map[string][]string(this.Ctx.Request.PostForm)
+	postParams, _ := json.Marshal(postParamsMap)
+	user := this.GetSession("author").(map[string]string)
+
+	logValue := map[string]interface{}{
+		"level": level,
+		"controller": controllerName,
+		"action": methodName,
+		"get": getParams,
+		"post": string(postParams),
+		"message": message,
+		"ip": this.getClientIp(),
+		"user_agent": userAgent,
+		"referer": referer,
+		"user_id": user["user_id"],
+		"username": user["username"],
+		"create_time": time.Now().Unix(),
+	}
+
+	models.LogModel.Insert(logValue)
+}
+
+func (this *BaseController) ErrorLog(message string)  {
+	this.RecordLog(message, models.Log_Level_Error)
+}
+
+func (this *BaseController) WarningLog(message string)  {
+	this.RecordLog(message, models.Log_Level_Warning)
+}
+
+func (this *BaseController) InfoLog(message string)  {
+	this.RecordLog(message, models.Log_Level_Info)
+}
+
+func (this *BaseController) DebugLog(message string)  {
+	this.RecordLog(message, models.Log_Level_Debug)
 }

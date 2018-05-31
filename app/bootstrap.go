@@ -95,7 +95,6 @@ func initRouter() {
 	beego.BConfig.WebConfig.AutoRender = false
 	beego.BConfig.RouterCaseSensitive = false
 	
-	
 	beego.Router("/", &controllers.MainController{}, "*:Index")
 	beego.Router("/author", &controllers.AuthorController{}, "*:Index")
 	beego.AutoRouter(&controllers.AuthorController{})
@@ -104,7 +103,7 @@ func initRouter() {
 	beego.AutoRouter(&controllers.NodeController{})
 	beego.AutoRouter(&controllers.MessageController{})
 	beego.AutoRouter(&controllers.ConsumerController{})
-	//beego.AutoRouter(&controllers.LogController{})
+	beego.AutoRouter(&controllers.LogController{})
 	beego.AutoRouter(&controllers.ProfileController{})
 	//beego.AutoRouter(&controllers.NoticeController{})
 	beego.ErrorHandler("404", http_404)
