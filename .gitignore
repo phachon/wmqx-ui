@@ -6,4 +6,4 @@ logs/*
 *.db
 wmqx-ui
 .session/
-conf/wmq-ui.conf
+conf/wmqx-ui.conf
