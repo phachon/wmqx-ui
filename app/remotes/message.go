@@ -234,3 +234,36 @@ func (m *Message) ReloadMessage(name string) (err error) {
 
 	return nil
 }
+
+func (m *Message) GetConsumersStatus(name string) (consumerStatus []map[string]interface{}, err error) {
+
+	url := fmt.Sprintf("%s%s", m.ManagerUri, messageStatusPath)
+
+	headerValue := map[string]string{
+		m.TokenHeaderName: m.Token,
+	}
+	queryValue := map[string]string{
+		"name": name,
+	}
+	body, code, err := utils.Request.HttpGet(url, queryValue, headerValue)
+	if err != nil {
+		return
+	}
+	if len(body) == 0 {
+		return consumerStatus, errors.New(fmt.Sprintf("request wmqx failed, httpStatus: %d", code))
+	}
+	v := map[string]interface{}{}
+	if json.Unmarshal(body, &v) != nil {
+		return
+	}
+	if v["code"].(float64) == 0 {
+		return consumerStatus, errors.New(fmt.Sprintf(v["message"].(string)))
+	}
+	for _, items := range v["data"].([]interface{}) {
+		if items == nil {
+			continue
+		}
+		consumerStatus = append(consumerStatus, items.(map[string]interface{}))
+	}
+	return
+}

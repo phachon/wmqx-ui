@@ -10,7 +10,6 @@ type ConsumerController struct {
 	BaseController
 }
 
-//添加消费者
 func (this *ConsumerController) Add() {
 	nodeId := this.GetString("node_id", "")
 	messageName := this.GetString("message_name", "")
@@ -20,7 +19,6 @@ func (this *ConsumerController) Add() {
 	this.viewLayout("consumer/form", "default")
 }
 
-//添加保存
 func (this *ConsumerController) Save() {
 
 	nodeId := this.GetString("node_id", "")
@@ -74,7 +72,6 @@ func (this *ConsumerController) Save() {
 	this.jsonSuccess("添加消息成功", nil, redirect)
 }
 
-//修改消费者
 func (this *ConsumerController) Edit() {
 
 	nodeId := this.GetString("node_id", "")
@@ -104,7 +101,6 @@ func (this *ConsumerController) Edit() {
 	this.viewLayout("consumer/edit", "default")
 }
 
-//修改保存
 func (this *ConsumerController) Modify() {
 
 	nodeId := this.GetString("node_id", "")
@@ -162,7 +158,6 @@ func (this *ConsumerController) Modify() {
 	this.jsonSuccess("修改消费者成功", nil, redirect)
 }
 
-//删除消费者
 func (this *ConsumerController) Delete() {
 
 	nodeId := this.GetString("node_id", "")
@@ -196,39 +191,4 @@ func (this *ConsumerController) Delete() {
 	this.InfoLog("删除消费者 "+consumerId+" 成功")
 	redirect := fmt.Sprintf("/message/consumer?node_id=%s&message_name=%s", nodeId, messageName)
 	this.jsonSuccess("删除消费者成功", nil, redirect)
-}
-
-//获取消费者状态
-func (this *ConsumerController) Status() {
-
-	nodeId := this.GetString("node_id", "")
-	consumerId := this.GetString("consumer_id", "")
-	messageName := this.GetString("message_name")
-
-	if nodeId == "" {
-		this.jsonError("没有选择节点")
-	}
-	if consumerId == "" {
-		this.jsonError("没有选择消费者")
-	}
-	if messageName == "" {
-		this.jsonError("消息名称不能为空")
-	}
-
-	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
-	if err != nil {
-		this.ErrorLog("获取节点 "+nodeId+" 失败: "+err.Error())
-		this.jsonError("节点错误")
-	}
-	if len(node) == 0 {
-		this.jsonError("节点不存在")
-	}
-
-	status, err := remotes.NewConsumerByNode(node, messageName).GetStatusByConsumerId(consumerId)
-	if err != nil {
-		this.ErrorLog("获取消费者状态失败: "+err.Error())
-		this.jsonError("获取消费者状态失败")
-	}
-
-	this.jsonSuccess("获取消费者状态成功", status)
 }

@@ -29,31 +29,33 @@
                         <thead>
                         <tr>
                             <th class="w10p">消息名称</th>
-                            <th class="w7p">Exchange</th>
+                            <th class="w6p">模式</th>
                             <th>消费接口</th>
+                            <th class="w70">超时</th>
                             <th class="w90">RouteKey</th>
                             <th class="w90">状态</th>
-                            <th class="w70">超时</th>
-                            <th class="w200">备注</th>
+                            <th class="w150">LastTime</th>
+                            <th class="w150">备注</th>
                             <th class="w100">操作</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
                             <td>{{$message.name}}</td>
-                            <td>{{$message.mode}}</td>
-                            <td colspan="6" style="padding: 0">
+                            <td class="center">{{$message.mode}}</td>
+                            <td colspan="7" style="padding: 0">
                                 <table class="table table-hover table-bordered" style="border-width: 0 0 0 0;border:none;margin-bottom: 0px">
                                     <tbody>
                                     {{range $consumer := $consumers}}
                                     <tr class="consumer_tr" id="consumer_{{$consumer.id}}" style="border:none;">
                                         <td>{{$consumer.url}}</td>
+                                        <td class="w70 center">{{$consumer.timeout}}</td>
                                         <td class="w90">{{$consumer.route_key}}</td>
                                         <td class="w90 center consumer_status">
                                             <label class="text-info">waiting</label>
                                         </td>
-                                        <td class="w70 center">{{$consumer.timeout}}</td>
-                                        <td class="w200">{{$consumer.comment}}</td>
+                                        <td class="w150 consumer_last_time"></td>
+                                        <td class="w150">{{$consumer.comment}}</td>
                                         <td style="width: 99px" class="center">
                                             <a name="edit" class="glyphicon glyphicon-edit" data-link="/consumer/edit?node_id={{$node.node_id}}&message_name={{$message.name}}&consumer_id={{$consumer.id}}">修改</a>
                                             <a onclick="Common.confirm('确定要删除吗？', '/consumer/delete?node_id={{$node.node_id}}&message_name={{$message.name}}&consumer_id={{$consumer.id}}')" class="remove glyphicon glyphicon-trash">删除</a>
@@ -75,8 +77,9 @@
 <script src="/static/js/modules/consumer.js"></script>
 <script type="text/javascript">
     Consumer.bindFancyBox();
-    Consumer.status();
+    var url = "/message/consumerStatus?node_id={{$node.node_id}}&message_name={{$message.name}}";
+    Consumer.status(url);
     setInterval(function(){
-        Consumer.status();
+        Consumer.status(url);
     },10000);
 </script>

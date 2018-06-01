@@ -311,3 +311,33 @@ func (this *MessageController) Reload() {
 	this.InfoLog("重载消息" +name+ "成功")
 	this.jsonSuccess("重载消息成功", nil, "/message/consumer?node_id="+nodeId+"&message_name="+name)
 }
+
+func (this *MessageController) ConsumerStatus() {
+
+	nodeId := this.GetString("node_id", "")
+	messageName := this.GetString("message_name")
+
+	if nodeId == "" {
+		this.jsonError("没有选择节点")
+	}
+	if messageName == "" {
+		this.jsonError("消息名称不能为空")
+	}
+
+	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
+	if err != nil {
+		this.ErrorLog("获取节点 "+nodeId+" 失败: "+err.Error())
+		this.jsonError("节点错误")
+	}
+	if len(node) == 0 {
+		this.jsonError("节点不存在")
+	}
+
+	status, err := remotes.NewMessageByNode(node).GetConsumersStatus(messageName)
+	if err != nil {
+		this.ErrorLog("获取消费者状态失败: "+err.Error())
+		this.jsonError("获取消费者状态失败")
+	}
+
+	this.jsonSuccess("获取消费者状态成功", status)
+}

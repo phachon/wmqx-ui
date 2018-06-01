@@ -33,17 +33,9 @@ var Consumer = {
         });
     },
 
-    node: function (element) {
-        var id = $(element).val();
-        location.href='/consumer/list?node_id='+id;
-    },
-
     //定时更新状态
     status: function (url) {
 
-        url = '/consumer/status?node_id=1';
-
-        var nowTime = Date.parse(new Date()) / 1000;
         $.ajax({
             type : 'post',
             url : url,
@@ -52,13 +44,18 @@ var Consumer = {
             success : function(response) {
                 if(response.code == 1) {
                     var values = response.data;
+                    if (values.length == 0) {
+                        return
+                    }
                     for(var i = 0; i < values.length; i++) {
-                        var element = $('#consumer_'+values[i].ID).find(".consumer_status");
-                        if(values[i].LastTime != 0) {
-                            element.html('<label class="text-success">running('+values[i].Count+')</label>');
+                        var statusElement = $('#consumer_'+values[i].consumer_id).find(".consumer_status");
+                        if(values[i].status == 1) {
+                            statusElement.html('<span class="label label-success">'+values[i].count+'</span>');
                         }else {
-                            element.html('<label class="text-danger">stoped('+values[i].Count+')</label>');
+                            statusElement.html('<span class="label label-danger">'+values[i].count+'</span>');
                         }
+                        var lastTimeElement = $('#consumer_'+values[i].consumer_id).find(".consumer_last_time");
+                        lastTimeElement.html($.myTime.UnixToDate(values[i].last_time, true, 8))
                     }
                 } else {
                     console.log(response.message);
