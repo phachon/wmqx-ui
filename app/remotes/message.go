@@ -5,6 +5,7 @@ import (
 	"wmqx-ui/app/utils"
 	"encoding/json"
 	"errors"
+	"strings"
 )
 
 var (
@@ -19,12 +20,13 @@ var (
 )
 
 func NewMessageByNode(node map[string]string) *Message {
-	return NewMessage(node["manager_uri"], node["token_header_name"], node["token"])
+	return NewMessage(node["manager_uri"], node["token_header_name"], node["token"], node["publish_uri"])
 }
 
-func NewMessage(managerUri string, tokenHeader string, token string) *Message {
+func NewMessage(managerUri string, tokenHeader string, token string, publishUri string) *Message {
 	return &Message{
 		ManagerUri: managerUri,
+		PublishUri: publishUri,
 		TokenHeaderName: tokenHeader,
 		Token: token,
 	}
@@ -32,6 +34,7 @@ func NewMessage(managerUri string, tokenHeader string, token string) *Message {
 
 type Message struct {
 	ManagerUri string
+	PublishUri string
 	TokenHeaderName string
 	Token string
 }
@@ -266,4 +269,35 @@ func (m *Message) GetConsumersStatus(name string) (consumerStatus []map[string]i
 		consumerStatus = append(consumerStatus, items.(map[string]interface{}))
 	}
 	return
+}
+
+func (m *Message) Publish(name string, method string, data string, routeKey string) (err error) {
+
+	message, err := m.GetMessageByName(name)
+	if err != nil {
+		return
+	}
+	headerValue := map[string]string{}
+	if message["is_need_token"].(bool) {
+		headerValue["WMQX_MESSAGE_TOKEN"] = message["token"].(string)
+	}
+	if routeKey != "" {
+		headerValue["WMQX_MESSAGE_ROUTEKEY"] = routeKey
+	}
+	url := fmt.Sprintf("%s/publish/%s", m.PublishUri, name)
+
+	queryValue := utils.Request.ParseString(data)
+	code := 0
+	if strings.ToLower(method) == "get" {
+		_, code, err = utils.Request.HttpGet(url, queryValue, headerValue)
+	}else {
+		_, code, err = utils.Request.HttpPost(url, queryValue, headerValue)
+	}
+	if err != nil {
+		return
+	}
+	if code != 200 {
+		return errors.New(fmt.Sprintf("request status: %d", code))
+	}
+	return nil
 }

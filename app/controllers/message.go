@@ -341,3 +341,63 @@ func (this *MessageController) ConsumerStatus() {
 
 	this.jsonSuccess("获取消费者状态成功", status)
 }
+
+func (this *MessageController) Test() {
+
+	nodeId := this.GetString("node_id", "")
+
+	if nodeId == "" {
+		this.viewError("没有选择节点", "default")
+	}
+	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
+	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
+		this.viewError("节点错误", "default")
+	}
+	if len(node) == 0 {
+		this.viewError("节点不存在", "default")
+	}
+	messages, err := remotes.NewMessageByNode(node).GetMessages()
+	if err != nil {
+		this.ErrorLog("获取节点消息失败: "+err.Error())
+		this.viewError("获取消息失败", "default")
+	}
+
+	this.Data["node_id"] = nodeId
+	this.Data["messages"] = messages
+	this.viewLayout("message/test", "default")
+}
+
+func (this *MessageController) Send() {
+
+	nodeId := this.GetString("node_id", "0")
+	message := this.GetString("message", "")
+	data := this.GetString("data", "")
+	routeKey := this.GetString("route_key", "")
+	method := this.GetString("method", "GET")
+
+	if nodeId == "" {
+		this.jsonError("没有选择节点")
+	}
+	if message == "" {
+		this.jsonError("没有选择消息")
+	}
+	if data == "" {
+		this.jsonError("发送数据不能为空")
+	}
+
+	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
+	if err != nil {
+		this.ErrorLog("获取节点 "+nodeId+" 失败: "+err.Error())
+		this.jsonError("节点错误")
+	}
+	if len(node) == 0 {
+		this.jsonError("节点不存在")
+	}
+	err = remotes.NewMessageByNode(node).Publish(message, method, data, routeKey)
+	if err != nil {
+		this.jsonError(err.Error(), "")
+	}
+
+	this.jsonSuccess("发送ok", nil, "/message/list?node_id="+nodeId)
+}
