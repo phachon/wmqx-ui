@@ -1,20 +1,14 @@
-<div class="container">
-    <div class="row">
-        <br>
-        <div class="col-md-12">
-            <div class="alert alert-info" role="alert">
-                <strong><span class="glyphicon glyphicon-info-sign"></span></strong> 点击下载日志文件
+<div class="panel panel-default">
+    <div class="panel-body">{{$logs := .logs}}{{$downloadUri := .downloadUri}}
+        <div class="alert alert-info" role="alert">
+            <strong><span class="glyphicon glyphicon-info-sign"></span></strong> 点击下载 wmqx 节点日志文件
+        </div>
+        <div class="row">
+            {{range $index, $logName := $logs}}
+            <div class="col-md-3">
+                <a class="btn btn-link" role="button" href="{{$downloadUri}}{{$logName}}"><span class="glyphicon glyphicon-download-alt"></span> {{$logName}} </a>
             </div>
-            <hr>
-            <div class="panel-body">
-                <div class="row">
-                    {{range $logName, $logUrl := .logDownloads}}
-                    <div class="col-md-3">
-                        <a class="btn btn-link" role="button" href="{{$logUrl}}"><span class="glyphicon glyphicon-download-alt"></span> {{$logName}} </a>
-                    </div>
-                    {{end}}
-                </div>
-            </div>
+            {{end}}
         </div>
     </div>
 </div>

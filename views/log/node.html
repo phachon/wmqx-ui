@@ -10,7 +10,7 @@
             <div class="panel-body" style="padding-left: 9px;">
                 <div class="row">
                     <form action="/log/node" method="post">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="input-group">
                                 <span class="input-group-addon">节点</span>
                                 <select class="form-control" name="node_id">
@@ -22,12 +22,24 @@
                         </div>
                         <div class="col-md-2">
                             <div class="input-group">
-                                <span class="input-group-addon">日志类型</span>
-                                <select class="form-control" name="type">
+                                <span class="input-group-addon">数量</span>
+                                <select class="form-control" name="number">
+                                    <option value="10" {{if eq .number "10"}} selected {{end}}>10</option>
+                                    <option value="30" {{if eq .number "30"}} selected {{end}}>30</option>
+                                    <option value="50" {{if eq .number "50"}} selected {{end}}>50</option>
+                                    <option value="100" {{if eq .number "100"}} selected {{end}}>100</option>
+                                    <option value="150" {{if eq .number "150"}} selected {{end}}>150</option>
+                                    <option value="200" {{if eq .number "200"}} selected {{end}}>200</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <span class="input-group-addon">日志级别</span>
+                                <select class="form-control" name="level">
                                     <option value="">全部</option>
-                                    <option value="error" {{if eq .log_type "error"}} selected {{end}}>ERROR</option>
-                                    <option value="info" {{if eq .log_type "info"}} selected {{end}}>INFO</option>
-                                    <option value="debug" {{if eq .log_type "debug"}} selected {{end}}>DEBUG</option>
+                                    <option value="error" {{if eq .level "error"}} selected {{end}}>ERROR</option>
+                                    <option value="info" {{if eq .level "info"}} selected {{end}}>INFO</option>
                                 </select>
                             </div>
                         </div>
@@ -39,9 +51,9 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div class="input-group">
-                                <button type="button" class="btn btn-primary" name="log_download" data-link="/log/download?node_id={{.node_id}}"><i class="glyphicon glyphicon-download-alt"></i> 下载日志 </button>
+                                <button type="button" class="btn btn-primary" name="log_download" data-link="/log/list?node_id={{$nodeId}}"><i class="glyphicon glyphicon-download-alt"></i> 下载日志 </button>
                             </div>
                         </div>
                     </form>

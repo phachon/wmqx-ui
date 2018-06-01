@@ -105,7 +105,6 @@ func initRouter() {
 	beego.AutoRouter(&controllers.ConsumerController{})
 	beego.AutoRouter(&controllers.LogController{})
 	beego.AutoRouter(&controllers.ProfileController{})
-	//beego.AutoRouter(&controllers.NoticeController{})
 	beego.ErrorHandler("404", http_404)
 	beego.ErrorHandler("500", http_500)
 

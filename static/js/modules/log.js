@@ -3,6 +3,7 @@ var Log = {
 	bindFancyBox: function() {
 		$('button[name="log_download"]').each(function () {
 			$(this).fancybox({
+                padding: 12,
 				minWidth: 600,
 				minHeight: 420,
 				width: '80%',

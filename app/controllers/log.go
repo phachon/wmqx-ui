@@ -53,7 +53,6 @@ func (this *LogController) Info() {
 		this.viewError("日志不存在", "default")
 	}
 
-
 	this.Data["log"] = log
 
 	this.viewLayout("log/info", "default")
@@ -63,7 +62,8 @@ func (this *LogController) Node() {
 
 	nodeId := this.GetString("node_id", "")
 	keyword := this.GetString("keyword", "")
-	logType := this.GetString("type", "error")
+	level := this.GetString("level", "")
+	number := this.GetString("number", "30")
 
 	nodes := []map[string]string{}
 	var err error
@@ -105,30 +105,47 @@ func (this *LogController) Node() {
 		this.viewError("没有选择节点", "template")
 	}
 
-	logs, err := remotes.NewLogByNode(defaultNode).Index()
+	logs, err := remotes.NewLogByNode(defaultNode).Search(number, level, keyword)
 	if err != nil {
 		this.ErrorLog("获取节点日志失败："+err.Error())
-		this.viewError("获取节点日志失败", "default")
+		this.viewError("获取节点日志失败", "template")
 	}
 
 	this.Data["nodes"] = nodes
 	this.Data["node_id"] = nodeId
-	this.Data["log_type"] = logType
+	this.Data["level"] = level
 	this.Data["keyword"] = keyword
+	this.Data["number"] = number
 	this.Data["logs"] = logs
 
 	this.viewLayout("log/node", "template")
 }
 
-func (this *LogController) Download()  {
+func (this *LogController) List()  {
 
-	//nodeId, _ := this.GetInt("node_id", 1);
-	//
-	//_, logDownloads := models.LogDownload(nodeId)
-	//
-	//this.Data["logDownloads"] = logDownloads;
-	//
-	//this.layoutHtml = "layout/template";
-	//
-	//this.display("log/download");
+	nodeId := this.GetString("node_id", "")
+
+	if nodeId == "" {
+		this.viewError("没有选择节点", "default")
+	}
+
+	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
+	if err != nil {
+		this.ErrorLog("获取节点失败: "+err.Error())
+		this.viewError("节点错误", "default")
+	}
+	if len(node) == 0 {
+		this.viewError("节点不存在", "default")
+	}
+
+	logs, err := remotes.NewLogByNode(node).List()
+	if err != nil {
+		this.ErrorLog("获取节点日志列表失败: "+err.Error())
+		this.viewError("获取节点日志列表失败", "default")
+	}
+
+	downloadUri := node["manager_uri"]+"/log/download?filename="
+	this.Data["logs"] = logs
+	this.Data["downloadUri"] = downloadUri
+	this.viewLayout("log/download", "default")
 }
