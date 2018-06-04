@@ -1,57 +1,74 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert" style="line-height: 2em">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                <h4>wmqx-ui V1.0 正式发布！</h4>
-                <p>Wmq 后台采用 beego1.8 + Sqlite !</p>
-                <p style="margin-top: 15px;">
-                    <a href="https://github.com/phachon/wmqx-ui" class="btn btn-primary">源代码(GitHub)</a>&nbsp;&nbsp;
-                    <a href="https://github.com/phachon/wmqx-ui/issues/new" class="btn btn-danger">提交Bug</a>&nbsp;&nbsp;
-                    <a class="btn btn-sm btn-success" href="https://github.com/phachon/wmqx-ui/releases/tag/v1.0">
-                        <i class="glyphicon glyphicon-download"></i> &nbsp; 下载 <span style="font-size: 60%;">(V1.0)</span> &nbsp;
-                    </a>
-                    <a href="https://github.com/phachon" class="btn btn-warning">学习交流</a>&nbsp;&nbsp;
-                </p>
+                <div>
+                    <span style="font-size: 18px">WMQX-UI </span>
+                    <span class="label label-default">{{.version}}</span>
+                </div>
+                <p>WMQX-UI 是基于 <a href="https://github.com/phachon/wmqx" target="_blank">WMQX</a> 消息服务 API 实现的后台系统</p>
             </div>
         </div>
-        <div class="col-md-12">
+    </div>
+    <div class="row">
+        <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">系统公告板</div>
+                <div class="panel-heading"><strong>服务器状态</strong></div>
                 <div class="panel-body">
-                    <div class="col-md-7">
-                        {{ range $notice := .notices }}
-                        <div class="alert alert-info alert-dismissible fade in" role="alert" style="padding: 10px 10px;margin-bottom: 10px;">
-                            <p>
-                                <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-                                <strong>{{$notice.UserName}}：</strong>
-                                {{$notice.Message}}&nbsp;&nbsp; — {{dateFormat $notice.CreateTime "Y-m-d H:i:s" }}
-                            </p>
+                    <br>
+                    <p> CPU使用率：<strong class="cpu_text">0%</strong></p>
+                    <div class="progress" style="height: 14px">
+                        <div id="cpu_progress" class="progress-bar progress-bar-success progress-bar-striped active"
+                             role="progressbar"
+                             aria-valuenow="0"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             style="min-width: 2em; width: 0">
+                            <div style="font-size:10px;line-height:14px;" class="cpu_text"> 0%</div>
                         </div>
-                        {{end}}
                     </div>
-                    <div class="col-md-5">
-                        <form action="/notice/save" method="post" onsubmit="return false">
-                            <div class="form-group">
-                                <label for="text1">输入公告内容</label>
-                                <input type="hidden" name="user_name" value="{{.userName}}"/>
-                                <textarea class="form-control" id="text1" name="message" rows="5" cols="10" placeholder="输入公告内容"></textarea>
-                                <button type="button" name="submit" onclick="Form.ajaxSubmit(this.form, false);" class="btn btn-primary mar_t15">发布</button>
-                            </div>
-                        </form>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">联系手册</div>
-                            <div class="panel-body">
-                                <ul class="list-group">
-                                    {{ range $user := .users }}
-                                    <li class="list-group-item">{{$user.Name}}：<span class="glyphicon glyphicon-phone"></span>&nbsp;&nbsp;{{$user.Mobile}}&nbsp;&nbsp;<span class="glyphicon glyphicon-envelope"></span>&nbsp;&nbsp;{{$user.Email}}</li>
-                                    {{end}}
-                                </ul>
-                            </div>
+                    <p>磁盘使用率：<strong class="disk_text">0%</strong></p>
+                    <div class="progress" style="height: 14px">
+                        <div id="disk_progress" class="progress-bar progress-bar-warning progress-bar-striped active"
+                             role="progressbar"
+                             aria-valuenow="0"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             style="width: 60%">
+                            <div style="font-size:10px;line-height:14px;" class="disk_text"> 0%</div>
+                        </div>
+                    </div>
+                    <p>内存使用率：<strong class="memory_text">0%</strong></p>
+                    <div class="progress" style="height: 14px">
+                        <div id="memory_progress" class="progress-bar progress-bar-danger progress-bar-striped active"
+                             role="progressbar"
+                             aria-valuenow="0"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             style="width: 80%">
+                            <div style="font-size:10px;line-height:14px;" class="memory_text"> 0%</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="panel panel-default" style="height: 269px;" >
+                <div class="panel-heading"><strong>系统联系人手册</strong></div>
+                <div class="panel-body" style="height: 223px; overflow-y:scroll;">
+                    <ul class="list-group" id="contact">
+
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+        <script type="text/javascript" src="/static/js/modules/main.js"></script>
+<script type="text/javascript">
+    $(window).load(function(){
+        Main.GetServerStatus("/main/serverStatus");
+        setInterval('Main.GetServerStatus("/main/serverStatus")', 2000);
+    });
+</script>

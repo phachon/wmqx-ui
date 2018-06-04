@@ -5,10 +5,8 @@ import (
 	"log"
 	"fmt"
 	"flag"
-	"net/http"
 	"wmqx-ui/app/utils"
 	"github.com/astaxie/beego"
-	"wmqx-ui/app/controllers"
 	"github.com/snail007/go-activerecord/mysql"
 	"github.com/fatih/color"
 	"wmqx-ui/app/models"
@@ -19,14 +17,13 @@ var (
 )
 
 var (
-	version = "v0.1"
+	Version = "v0.1"
 )
 
 func init() {
 	poster()
 	initConfig()
 	initDB()
-	initRouter()
 }
 
 // poster logo
@@ -40,7 +37,7 @@ __        __  __  __    ___   __  __          _   _   ___
    \_/\_/    |_|  |_|  \__\_\ /_/\_\          \___/  |___|
 `+
 "Author: phachon\r\n"+
-"Version: "+version+"\r\n"+
+"Version: "+Version+"\r\n"+
 "Link: https://github.com/phachon/wmqx-ui"
 	fg.Println(logo)
 }
@@ -90,28 +87,6 @@ func initConfig()  {
 	beego.SetLogFuncCall(true)
 }
 
-func initRouter() {
-	// router
-	beego.BConfig.WebConfig.AutoRender = false
-	beego.BConfig.RouterCaseSensitive = false
-	
-	beego.Router("/", &controllers.MainController{}, "*:Index")
-	beego.Router("/author", &controllers.AuthorController{}, "*:Index")
-	beego.AutoRouter(&controllers.AuthorController{})
-	beego.AutoRouter(&controllers.MainController{})
-	beego.AutoRouter(&controllers.UserController{})
-	beego.AutoRouter(&controllers.NodeController{})
-	beego.AutoRouter(&controllers.MessageController{})
-	beego.AutoRouter(&controllers.ConsumerController{})
-	beego.AutoRouter(&controllers.LogController{})
-	beego.AutoRouter(&controllers.ProfileController{})
-	beego.ErrorHandler("404", http_404)
-	beego.ErrorHandler("500", http_500)
-
-	// add template func
-	beego.AddFuncMap("dateFormat", utils.NewDate().Format)
-}
-
 //init db
 func initDB()  {
 	host := beego.AppConfig.String("db::host")
@@ -133,12 +108,4 @@ func initDB()  {
 		beego.Error(fmt.Errorf("database error:%s,with config : %v", err, cfg))
 		os.Exit(100)
 	}
-}
-
-func http_404(rs http.ResponseWriter, req *http.Request) {
-	rs.Write([]byte("404 not found!"))
-}
-
-func http_500(rs http.ResponseWriter, req *http.Request) {
-	rs.Write([]byte("500 server error!"))
 }
