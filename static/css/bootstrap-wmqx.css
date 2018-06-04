@@ -11,18 +11,28 @@ body{
     padding-bottom: 50px;
 }
 
-/*½ø¶ÈÌõ*/
+.version {
+    padding: .0em .4em .0em .4em;
+    font-size: 4px;
+    background-color: #777;
+    border-radius: .25em;
+    font-weight: 400;
+    color: white;
+    margin-bottom: 25px;
+}
+
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 .progress {
     margin-bottom: 15px;
 }
 
-/*Í·Ïñ*/
+/*Í·ï¿½ï¿½*/
 .wh64{
     width: 64px;
     height: 64px;
     border-radius:50% ;
 }
-/*±ß¾à*/
+/*ï¿½ß¾ï¿½*/
 .mar_t15{
     margin-top: 15px;
 }
