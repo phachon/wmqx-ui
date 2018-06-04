@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+	"net/http"
 )
 
 var (
@@ -277,27 +278,43 @@ func (m *Message) Publish(name string, method string, data string, routeKey stri
 	if err != nil {
 		return
 	}
-	headerValue := map[string]string{}
+	headerValues := map[string]string{}
 	if message["is_need_token"].(bool) {
-		headerValue["WMQX_MESSAGE_TOKEN"] = message["token"].(string)
+		headerValues["WMQX_MESSAGE_TOKEN"] = message["token"].(string)
 	}
 	if routeKey != "" {
-		headerValue["WMQX_MESSAGE_ROUTEKEY"] = routeKey
+		headerValues["WMQX_MESSAGE_ROUTEKEY"] = routeKey
 	}
 	url := fmt.Sprintf("%s/publish/%s", m.PublishUri, name)
 
-	queryValue := utils.Request.ParseString(data)
-	code := 0
-	if strings.ToLower(method) == "get" {
-		_, code, err = utils.Request.HttpGet(url, queryValue, headerValue)
+	var req *http.Request
+	if method == "get" {
+		if !strings.Contains(url, "?") {
+			url += "?"
+		}
+		req, err = http.NewRequest("GET", url+data, nil)
 	}else {
-		_, code, err = utils.Request.HttpPost(url, queryValue, headerValue)
+		req, err = http.NewRequest("POST", url, strings.NewReader(data))
 	}
 	if err != nil {
 		return
 	}
+	if len(headerValues) > 0 {
+		for key, value := range headerValues {
+			req.Header.Set(key, value)
+		}
+	}
+	//req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	code := resp.StatusCode
+	defer resp.Body.Close()
 	if code != 200 {
 		return errors.New(fmt.Sprintf("request status: %d", code))
 	}
+
 	return nil
 }
