@@ -5,6 +5,7 @@ import (
 	"wmqx-ui/app/models"
 	"time"
 	"wmqx-ui/app/remotes"
+	"strconv"
 )
 
 type NodeController struct {
@@ -23,22 +24,47 @@ func (this *NodeController) List() {
 		"comment": comment,
 	}
 
+	var count int64
+	var nodes []map[string]string
 	number := 20
 	limit := (page - 1) * number
 	var err error
-	var count int64
-	var nodes []map[string]string
-	if keywords["comment"] != "" {
-		count, err = models.NodeModel.CountNodesByKeywords(keywords)
-		nodes, err = models.NodeModel.GetNodesByKeywordsAndLimit(keywords, limit, number)
-	} else {
-		count, err = models.NodeModel.CountNodes()
-		nodes, err = models.NodeModel.GetNodesByLimit(limit, number)
+	if this.roleIsUser() {
+		nodeIds := []string{}
+		userNodes, err := models.UserNodeModel.GetUserNodeByUserId(this.UserID)
+		if err != nil {
+			this.ErrorLog("获取节点失败："+err.Error())
+			this.viewError("获取节点失败", "template")
+			return
+		}
+		for _, userNode := range userNodes {
+			nodeIds = append(nodeIds, userNode["node_id"])
+		}
+		if len(nodeIds) == 0 {
+			count = 0
+		}else {
+			if keywords["comment"] != "" {
+				count, err = models.NodeModel.CountNodesByKeywordsInNodeIds(keywords, nodeIds)
+				nodes, err = models.NodeModel.GetNodesByKeywordsAndLimitInNodeIds(keywords, nodeIds, limit, number)
+			} else {
+				count = int64(len(nodeIds))
+				nodes, err = models.NodeModel.GetNodesByLimitInNodeIds(limit, nodeIds, number)
+			}
+		}
+	}else {
+		if keywords["comment"] != "" {
+			count, err = models.NodeModel.CountNodesByKeywords(keywords)
+			nodes, err = models.NodeModel.GetNodesByKeywordsAndLimit(keywords, limit, number)
+		} else {
+			count, err = models.NodeModel.CountNodes()
+			nodes, err = models.NodeModel.GetNodesByLimit(limit, number)
+		}
 	}
 	if err != nil {
 		this.ErrorLog("获取节点失败："+err.Error())
-		this.viewError(err.Error(), "/node/list")
+		this.viewError(err.Error(), "template")
 	}
+
 	this.Data["nodes"] = nodes
 	this.Data["comment"] = comment
 	this.SetPaginator(number, count)
@@ -69,6 +95,14 @@ func (this *NodeController) Save() {
 	if comment ==  "" {
 		this.jsonError("备注不能为空")
 	}
+	nodes, _ := models.NodeModel.GetNodeByManagerUri(managerURI)
+	if len(nodes) > 0 {
+		this.jsonError("管理URI已经存在")
+	}
+	nodes, _ = models.NodeModel.GetNodeByPublishUri(publishURI)
+	if len(nodes) > 0 {
+		this.jsonError("发布URI已经存在")
+	}
 
 	nodeValue := map[string]interface{}{
 		"manager_uri":      strings.TrimRight(managerURI, "/"),
@@ -80,10 +114,22 @@ func (this *NodeController) Save() {
 		"create_time":      time.Now().Unix(),
 		"update_time":      time.Now().Unix(),
 	}
-	_, err := models.NodeModel.Insert(nodeValue)
+	nodeId, err := models.NodeModel.Insert(nodeValue)
 	if err != nil {
 		this.ErrorLog("添加节点失败: "+err.Error())
 		this.jsonError("添加节点失败！")
+	}
+
+	// add user_node
+	userNode := map[string]interface{}{
+		"user_id": this.UserID,
+		"node_id": nodeId,
+		"create_time": time.Now().Unix(),
+	}
+	_, err = models.UserNodeModel.Insert(userNode)
+	if err != nil {
+		this.ErrorLog("插入用户 "+this.UserID+" 节点 "+strconv.FormatInt(nodeId, 10)+" 关系失败: "+err.Error())
+		this.jsonError("添加节点失败")
 	}
 	this.InfoLog("添加节点成功")
 	this.jsonSuccess("添加节点成功", nil, "/node/list")
@@ -93,13 +139,13 @@ func (this *NodeController) Edit() {
 
 	nodeId := this.GetString("node_id", "")
 	if nodeId == "" {
-		this.viewError("节点不存在", "/node/list")
+		this.viewError("节点不存在", "template")
 	}
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
 		this.ErrorLog("查找节点 "+nodeId+" 失败: "+err.Error())
-		this.viewError("节点不存在", "/node/list")
+		this.viewError("节点不存在", "template")
 	}
 
 	this.Data["node"] = node
@@ -115,7 +161,7 @@ func (this *NodeController) Modify() {
 	token := strings.TrimSpace(this.GetString("token"))
 	comment := strings.TrimSpace(this.GetString("comment"))
 	if nodeId == "" {
-		this.viewError("节点不存在", "/node/list")
+		this.viewError("节点不存在", "template")
 	}
 	if managerURI == "" {
 		this.jsonError("管理URI不能为空")
@@ -132,10 +178,18 @@ func (this *NodeController) Modify() {
 	if comment ==  "" {
 		this.jsonError("备注不能为空")
 	}
+	isExists, _ := models.NodeModel.HaveNodeByManagerUriAndNodeId(managerURI, nodeId)
+	if isExists {
+		this.jsonError("管理URI已经存在")
+	}
+	isExists, _ = models.NodeModel.HaveNodeByPublishUriAndNodeId(publishURI, nodeId)
+	if isExists {
+		this.jsonError("发布URI已经存在")
+	}
 
 	nodeValue := map[string]interface{}{
-		"manager_uri":      managerURI,
-		"publish_uri":      publishURI,
+		"manager_uri":      strings.TrimRight(managerURI, "/"),
+		"publish_uri":      strings.TrimRight(publishURI, "/"),
 		"token":            token,
 		"token_header_name":tokenHeaderName,
 		"comment":          comment,
@@ -196,7 +250,7 @@ func (this *NodeController) Message() {
 
 	messages, err := remotes.NewMessageByNode(node).GetMessages()
 	if err != nil {
-		this.viewError(err.Error(), "default")
+		this.viewError("获取节点消息列表失败", "default")
 	}
 
 	this.Data["messages"] = messages

@@ -58,7 +58,11 @@ var Consumer = {
                         lastTimeElement.html($.myTime.UnixToDate(values[i].last_time, true, 8))
                     }
                 } else {
-                    console.log(response.message);
+                    console.log(response);
+                    if (response.redirect.url) {
+                        console.log(response);
+                        location.href = response.redirect.url;
+                    }
                 }
             },
             error : function(response) {

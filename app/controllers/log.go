@@ -105,10 +105,11 @@ func (this *LogController) Node() {
 		this.viewError("没有选择节点", "template")
 	}
 
+	this.Data["error"] = ""
 	logs, err := remotes.NewLogByNode(defaultNode).Search(number, level, keyword)
 	if err != nil {
 		this.ErrorLog("获取节点日志失败："+err.Error())
-		this.viewError("获取节点日志失败", "template")
+		this.Data["error"] = "wmqx 节点 "+defaultNode["node_id"]+" 连接失败, 请检查是否正常启动"
 	}
 
 	this.Data["nodes"] = nodes

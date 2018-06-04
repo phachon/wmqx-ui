@@ -25,5 +25,15 @@ var Log = {
                 href: $(this).attr('data-link')
             });
         });
-	}
+	},
+
+    /**
+     * node
+     * @param element
+     */
+    node: function (element) {
+        var id = $(element).val();
+        var text = $('option[value='+id+']').text();
+        location.href='/log/node?node_id='+id;
+    }
 };

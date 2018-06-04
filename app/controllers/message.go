@@ -67,9 +67,10 @@ func (this *MessageController) List() {
 		this.viewError("没有选择节点", "template")
 	}
 
+	this.Data["error"] = ""
 	messages, err := remotes.NewMessageByNode(defaultNode).GetMessages()
 	if err != nil {
-		this.viewError("wmqx 节点 "+defaultNode["node_id"]+" 请求失败, 请检查是否正常工作", "template")
+		this.Data["error"] = "wmqx 节点 "+defaultNode["node_id"]+" 连接失败, 请检查是否正常启动"
 	}
 	this.Data["nodes"] = nodes
 	this.Data["node_id"] = nodeId

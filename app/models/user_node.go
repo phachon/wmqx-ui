@@ -59,6 +59,20 @@ func (userNode *UserNode) GetUserNodeByUserId(userId string) (userNodes []map[st
 	return
 }
 
+func (userNode *UserNode) GetUserNodeByUserIdAndNodeId(userId string, nodeId string) (userNodes map[string]string, err error) {
+	db := G.DB()
+	var rs *mysql.ResultSet
+	rs, err = db.Query(db.AR().From(Table_UserNode_Name).Where(map[string]interface{}{
+		"user_id": userId,
+		"node_id": nodeId,
+	}))
+	if err != nil {
+		return
+	}
+	userNodes = rs.Row()
+	return
+}
+
 func (userNode *UserNode) DeleteUserNodeByUserNodeId(userNodeId string) (err error) {
 	db := G.DB()
 	_, err = db.Exec(db.AR().Delete(Table_UserNode_Name, map[string]interface{}{

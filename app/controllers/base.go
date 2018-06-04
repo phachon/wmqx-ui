@@ -34,13 +34,27 @@ func (this *BaseController) Prepare() {
 	}
 
 	if !this.isLogin() {
-		this.Redirect("/author/index", 302)
+		if this.IsAjax() {
+			this.jsonError("no login", nil, "/author/index")
+		}else {
+			this.Redirect("/author/index", 302)
+		}
 		this.StopRun()
 	}
 
 	this.User = this.GetSession("author").(map[string]string)
 	this.UserID = this.User["user_id"]
 	this.Data["user"] = this.User
+
+	if !this.checkUserAccess() {
+		if this.IsAjax() {
+			this.jsonError("没有操作权限", nil, "/")
+		}else {
+			this.viewError("没有操作权限", "template", "/")
+		}
+		return
+	}
+
 	this.Layout = "layout/default.html"
 }
 
@@ -76,6 +90,29 @@ func (this *BaseController) isLogin() bool {
 		return false
 	}
 	// success
+	return true
+}
+
+
+// check user access
+func (this *BaseController) checkUserAccess() bool {
+	if this.roleIsAdmin() || this.roleIsRoot() {
+		return true
+	}
+	if this.controllerName == "user" {
+		return false
+	}
+	nodeId := this.GetString("node_id", "")
+	if nodeId != "" {
+		userNode, err := models.UserNodeModel.GetUserNodeByUserIdAndNodeId(this.UserID, nodeId)
+		if err != nil {
+			this.ErrorLog("check user access error: "+err.Error())
+			return false
+		}
+		if len(userNode) == 0 {
+			return false
+		}
+	}
 	return true
 }
 

@@ -1,4 +1,4 @@
-<div class="container">{{$nodes := .nodes}}{{$nodeId := .node_id}}
+<div class="container">{{$nodes := .nodes}}{{$nodeId := .node_id}}{{$error := .error}}
     <div class="row">
         <div class="col-md-12">
             <div class="panel-body" style="padding: 15px 0;">
@@ -27,6 +27,7 @@
                     </form>
                 </div>
             </div>
+            {{if eq $error ""}}
             <div class="panel panel-default">
                 <div class="table-responsive">
                     <table class="table table-bordered">
@@ -66,6 +67,12 @@
                 </div>
                 <div class="panel-footer"></div>
             </div>
+            {{else}}
+            <div class="alert alert-danger alert-dismissible fade in">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 style="margin-bottom: 0"><i class="glyphicon glyphicon-warning-sign"></i> 出错啦：{{$error}}</h4>
+            </div>
+            {{end}}
         </div>
     </div>
 </div>

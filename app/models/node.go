@@ -37,6 +37,25 @@ func (node *Node) GetNodesByLimit(limit int, number int) (nodes []map[string]str
 	return
 }
 
+func (node *Node) GetNodesByLimitInNodeIds(limit int, nodeIds []string, number int) (nodes []map[string]string, err error) {
+	db := G.DB()
+	var rs *mysql.ResultSet
+	rs, err = db.Query(
+		db.AR().
+			From(Table_Node_Name).
+			Where(map[string]interface{}{
+			"node_id": nodeIds,
+			"is_delete": NODE_NORMAL,
+		}).
+			Limit(limit, number).
+			OrderBy("node_id", "DESC"))
+	if err != nil {
+		return
+	}
+	nodes = rs.Rows()
+	return
+}
+
 // 节点总数
 func (node *Node) CountNodes() (count int64, err error) {
 
@@ -77,6 +96,27 @@ func (node *Node) GetNodesByKeywordsAndLimit(keywords map[string]string, limit i
 	return
 }
 
+func (node *Node) GetNodesByKeywordsAndLimitInNodeIds(keywords map[string]string, nodeIds []string, limit int, number int) (nodes []map[string]string, err error) {
+	db := G.DB()
+	var rs *mysql.ResultSet
+
+	where := map[string]interface{}{
+		"comment LIKE": "%" + keywords["comment"] + "%",
+		"node_id": nodeIds,
+		"is_delete": NODE_NORMAL,
+	}
+
+	sql := db.AR().From(Table_Node_Name).Where(where).Limit(limit, number).OrderBy("node_id", "DESC")
+
+	rs, err = db.Query(sql)
+	if err != nil {
+		return
+	}
+	nodes = rs.Rows()
+
+	return
+}
+
 // 根据关键字获取节点总数
 func (node *Node) CountNodesByKeywords(keywords map[string]string) (count int64, err error) {
 	db := G.DB()
@@ -84,6 +124,26 @@ func (node *Node) CountNodesByKeywords(keywords map[string]string) (count int64,
 
 	where := map[string]interface{}{
 		"comment LIKE": "%" + keywords["comment"] + "%",
+		"is_delete": NODE_NORMAL,
+	}
+
+	sql := db.AR().Select("count(*) as total").From(Table_Node_Name).Where(where)
+
+	rs, err = db.Query(sql)
+	if err != nil {
+		return
+	}
+	count = utils.NewConvert().StringToInt64(rs.Value("total"))
+	return
+}
+
+func (node *Node) CountNodesByKeywordsInNodeIds(keywords map[string]string, nodeIds []string) (count int64, err error) {
+	db := G.DB()
+	var rs *mysql.ResultSet
+
+	where := map[string]interface{}{
+		"comment LIKE": "%" + keywords["comment"] + "%",
+		"node_id": nodeIds,
 		"is_delete": NODE_NORMAL,
 	}
 
@@ -137,6 +197,71 @@ func (node *Node) GetNodeByNodeId(nodeId string) (n map[string]string, err error
 	}
 
 	n = rs.Row()
+	return
+}
+
+// 通过nodeId获取节点数据
+func (node *Node) GetNodeByManagerUri(managerUri string) (n []map[string]string, err error) {
+	db := G.DB()
+	var rs *mysql.ResultSet
+	rs, err = db.Query(db.AR().From(Table_Node_Name).Where(map[string]interface{}{
+		"manager_uri":   managerUri,
+		"is_delete": NODE_NORMAL,
+	}))
+	if err != nil {
+		return
+	}
+
+	n = rs.Rows()
+	return
+}
+
+func (node *Node) GetNodeByPublishUri(publishUri string) (n []map[string]string, err error) {
+	db := G.DB()
+	var rs *mysql.ResultSet
+	rs, err = db.Query(db.AR().From(Table_Node_Name).Where(map[string]interface{}{
+		"publish_uri": publishUri,
+		"is_delete": NODE_NORMAL,
+	}))
+	if err != nil {
+		return
+	}
+
+	n = rs.Rows()
+	return
+}
+
+func (node *Node) HaveNodeByManagerUriAndNodeId(managerUri string, nodeId string) (has bool, err error) {
+	db := G.DB()
+	var rs *mysql.ResultSet
+	rs, err = db.Query(db.AR().From(Table_Node_Name).Where(map[string]interface{}{
+		"manager_uri": managerUri,
+		"node_id !=": nodeId,
+		"is_delete": USER_NORMAL,
+	}).Limit(0, 1))
+	if err != nil {
+		return false, err
+	}
+	if rs.Len() > 0 {
+		has = true
+	}
+	return
+}
+
+func (node *Node) HaveNodeByPublishUriAndNodeId(publishUri string, nodeId string) (has bool, err error) {
+	db := G.DB()
+	var rs *mysql.ResultSet
+	rs, err = db.Query(db.AR().From(Table_Node_Name).Where(map[string]interface{}{
+		"publish_uri": publishUri,
+		"node_id !=": nodeId,
+		"is_delete": USER_NORMAL,
+	}).Limit(0, 1))
+	if err != nil {
+		return false, err
+	}
+	if rs.Len() > 0 {
+		has = true
+	}
 	return
 }
 
