@@ -12,7 +12,64 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="panel panel-default">
+            <div class="panel panel-default" style="height: 270px;">
+                <div class="panel-heading"><strong>我的节点</strong></div>
+                <div class="panel-body" style="height: 235px; overflow-y:scroll;">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <td class="w15p"><strong>ID</strong></td>
+                            <td><strong>URL</strong></td>
+                            <td class="w20p"><strong>操作</strong></td>
+                        </tr>{{$nodes := .nodes}}
+                        </thead>
+                        <tbody>
+                        {{range $node := $nodes}}
+                        <tr>
+                            <td>{{$node.node_id}}</td>
+                            <td>{{$node.manager_uri}}</td>
+                            <td><a href="/message/list?node_id={{$node.node_id}}"><i class="glyphicon glyphicon-play-circle"></i> 消息列表</a></td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default" style="height: 270px;">
+                <div class="panel-heading"><strong>我的操作日志</strong></div>
+                <div class="panel-body" style="height: 230px; overflow-y:scroll;">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <td class="w13p"><strong>级别</strong></td>
+                            <td><strong>描述</strong></td>
+                            <td class="w30p center"><strong>时间</strong></td>
+                        </tr>{{$logs := .logs}}
+                        </thead>
+                        <tbody>
+                        {{range $log := $logs}}
+                        <tr>
+                            <td>
+                            {{if eq $log.level "3"}}<span class="label label-danger">ERROR</span>{{end}}
+                            {{if eq $log.level "4"}}<span class="label label-warning">WARNING</span>{{end}}
+                            {{if eq $log.level "6"}}<span class="label label-info">INFO</span>{{end}}
+                            {{if eq $log.level "7"}}<span class="label label-debug">DEBUG</span>{{end}}
+                            </td>
+                            <td>{{$log.message}}</td>
+                            <td class="center">{{dateFormat $log.create_time "Y-m-d  H:i:s"}}</td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default" style="height: 270px;">
                 <div class="panel-heading"><strong>服务器状态</strong></div>
                 <div class="panel-body">
                     <br>
@@ -49,15 +106,22 @@
                             <div style="font-size:10px;line-height:14px;" class="memory_text"> 0%</div>
                         </div>
                     </div>
+                    <br>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="panel panel-default" style="height: 269px;" >
+            <div class="panel panel-default" style="height: 270px;" >
                 <div class="panel-heading"><strong>系统联系人手册</strong></div>
-                <div class="panel-body" style="height: 223px; overflow-y:scroll;">
-                    <ul class="list-group" id="contact">
-
+                <div class="panel-body" style="height: 235px; overflow-y:scroll;">
+                    <ul class="list-group">{{$contacts := .contacts}}
+                        {{range $index, $contact := $contacts}}
+                        <li class="list-group-item">{{$contact.name}}:
+                            <span class="glyphicon glyphicon-phone"></span>&nbsp;{{$contact.mobile}}&nbsp;&nbsp;
+                            <span class="glyphicon glyphicon-phone-alt"></span>&nbsp;{{$contact.phone}}&nbsp;&nbsp;
+                            <span class="glyphicon glyphicon-envelope"></span>&nbsp;{{$contact.email}}&nbsp;&nbsp;
+                        </li>
+                        {{end}}
                     </ul>
                 </div>
             </div>

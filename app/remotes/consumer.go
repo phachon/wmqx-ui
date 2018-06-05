@@ -85,7 +85,7 @@ func (c *Consumer) UpdateConsumerByConsumerId(consumerId string, consumer map[st
 		return
 	}
 	if v["code"].(float64) == 0 {
-		return errors.New(fmt.Sprintf(v["consumer"].(string)))
+		return errors.New(fmt.Sprintf(v["message"].(string)))
 	}
 
 	return nil
@@ -115,7 +115,7 @@ func (c *Consumer) DeleteConsumerByConsumerId(consumerId string) (err error) {
 		return
 	}
 	if v["code"].(float64) == 0 {
-		return errors.New(fmt.Sprintf(v["consumer"].(string)))
+		return errors.New(fmt.Sprintf(v["message"].(string)))
 	}
 
 	return nil
@@ -145,7 +145,7 @@ func (c *Consumer) GetStatusByConsumerId(consumerId string) (consumerStatus map[
 		return
 	}
 	if v["code"].(float64) == 0 {
-		return consumerStatus, errors.New(fmt.Sprintf(v["consumer"].(string)))
+		return consumerStatus, errors.New(fmt.Sprintf(v["message"].(string)))
 	}
 	consumerStatus = v["data"].(map[string]interface{})
 
@@ -176,7 +176,7 @@ func (c *Consumer) GetConsumerByConsumerId(consumerId string) (consumer map[stri
 		return
 	}
 	if v["code"].(float64) == 0 {
-		return consumer, errors.New(fmt.Sprintf(v["consumer"].(string)))
+		return consumer, errors.New(fmt.Sprintf(v["message"].(string)))
 	}
 
 	return v["data"].(map[string]interface{}), nil

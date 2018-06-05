@@ -27,26 +27,22 @@
                         <thead>
                         <tr>
                             <th class="w5p">ID</th>
-                            <th class="w15p">管理URI</th>
-                            <th class="w15p">发布URI</th>
-                            <th class="w15p">TokenHeader</th>
-                            <th class="w15p">TokenValue</th>
+                            <th class="w20p">管理URI</th>
+                            <th class="w20p">发布URI</th>
                             <th>备注</th>
+                            <th class="w8p">状态</th>
                             <th class="w10p">创建时间</th>
                             <th class="w15p">操作</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{range $node := $nodes}}
-                        <tr>
+                        <tr data-row="{{$node.node_id}}">
                             <td class="center">{{$node.node_id}}</td>
-                            <td>{{$node.manager_uri}}</td>
+                            <td data-name="manager_ri">{{$node.manager_uri}}</td>
                             <td>{{$node.publish_uri}}</td>
-                            <td>{{$node.token_header_name}}</td>
-                            <td class="center">
-                                <strong class="text text-success">{{$node.token}}</strong>
-                            </td>
                             <td>{{$node.comment}}</td>
+                            <td class="center " id="status_{{$node.node_id}}"></td>
                             <td class="center">{{dateFormat $node.create_time "Y-m-d" }}</td>
                             <td class="center">
                                 <a name="edit" data-link="/node/edit?node_id={{$node.node_id}}"><i class="glyphicon glyphicon-pencil"> </i>修改</a>
@@ -68,4 +64,8 @@
 <script src="/static/js/modules/node.js"></script>
 <script type="text/javascript">
     Node.bindFancyBox();
+    $(window).load(function () {
+        Node.GetNodeStatus("/node/status");
+    });
+    // setInterval('Node.GetNodeStatus("/node/status")', 2000);
 </script>

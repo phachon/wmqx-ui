@@ -6,6 +6,7 @@ import (
 	"time"
 	"wmqx-ui/app/remotes"
 	"strconv"
+	"github.com/astaxie/beego/httplib"
 )
 
 type NodeController struct {
@@ -280,4 +281,30 @@ func (this *NodeController) Reload() {
 	}
 	this.InfoLog("重载节点 "+nodeId+" 成功")
 	this.jsonSuccess("重载节点成功", nil, "message/list?node_id="+nodeId)
+}
+
+func (this *NodeController) Status() {
+
+	nodeId := this.GetString("node_id", "")
+	if nodeId == "" {
+		this.jsonError("节点不存在！")
+	}
+	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
+	if err != nil{
+		this.jsonError("节点不存在！")
+	}
+	if len(node) == 0 {
+		this.jsonError("节点不存在！")
+	}
+	v := map[string]interface{}{}
+	err = httplib.Get(node["manager_uri"]).ToJSON(&v)
+	if err != nil {
+		this.jsonError("server error")
+	}
+	if v["code"].(float64) == 0 {
+		this.jsonError(v["message"].(string))
+	}
+
+	data := v["data"].(map[string]interface{})
+	this.jsonSuccess("success", data)
 }

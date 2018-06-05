@@ -49,7 +49,7 @@ func (m *System) ReloadSystem() (err error) {
 		return
 	}
 	if v["code"].(float64) == 0 {
-		return errors.New(fmt.Sprintf(v["system"].(string)))
+		return errors.New(fmt.Sprintf(v["message"].(string)))
 	}
 
 	return nil
