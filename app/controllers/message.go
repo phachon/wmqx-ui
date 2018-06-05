@@ -376,6 +376,8 @@ func (this *MessageController) Send() {
 	data := this.GetString("data", "")
 	routeKey := this.GetString("route_key", "")
 	method := this.GetString("method", "GET")
+	tokenHeader := this.GetString("token_header", "WMQX_MESSAGE_TOKEN")
+	routeKeyHeader := this.GetString("routeKey_header", "WMQX_MESSAGE_ROUTEKEY")
 
 	if nodeId == "" {
 		this.jsonError("没有选择节点")
@@ -386,6 +388,9 @@ func (this *MessageController) Send() {
 	if data == "" {
 		this.jsonError("发送数据不能为空")
 	}
+	if routeKey != "" && routeKeyHeader == "" {
+		this.jsonError("RouteKey 不为空时，RouteKeyHeader不能为空")
+	}
 
 	node, err := models.NodeModel.GetNodeByNodeId(nodeId)
 	if err != nil {
@@ -395,10 +400,16 @@ func (this *MessageController) Send() {
 	if len(node) == 0 {
 		this.jsonError("节点不存在")
 	}
-	err = remotes.NewMessageByNode(node).Publish(message, method, data, routeKey)
+
+	err = remotes.NewMessageByNode(node).Publish(message, method, data, tokenHeader, routeKeyHeader, routeKey)
 	if err != nil {
-		this.jsonError(err.Error(), "")
+		this.ErrorLog("节点 "+nodeId+" 下消息 "+message+" 测试发送消息失败: "+err.Error())
+		this.jsonError("发送失败")
 	}
 
 	this.jsonSuccess("发送ok", nil, "/message/list?node_id="+nodeId)
+}
+
+func (this *MessageController) Publish() {
+	this.viewLayout("message/publish", "default")
 }

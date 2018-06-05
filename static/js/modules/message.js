@@ -34,10 +34,23 @@ var Message = {
         $('button[name="test_message"]').each(function () {
             $(this).fancybox({
                 padding: 12,
-                minWidth: 500,
+                minWidth: 580,
                 minHeight: 420,
                 width: '65%',
-                height: '50%',
+                height: '80%',
+                autoSize: false,
+                type: 'iframe',
+                href: $(this).attr('data-link')
+            });
+        });
+
+        $('button[name="publish_sdk"]').each(function () {
+            $(this).fancybox({
+                padding: 12,
+                minWidth: 580,
+                minHeight: 420,
+                width: '65%',
+                height: '80%',
                 autoSize: false,
                 type: 'iframe',
                 href: $(this).attr('data-link')

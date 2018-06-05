@@ -16,7 +16,7 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <a type="button" class="btn btn-success" href="/message/list"><i class="glyphicon glyphicon-share-alt"></i> 返回消息列表 </a>
+                            <a type="button" class="btn btn-success" href="/message/list?node_id={{$node.node_id}}"><i class="glyphicon glyphicon-share-alt"></i> 返回消息列表 </a>
                             <button type="button" class="btn btn-primary" name="add_consumer" data-link="/consumer/add?node_id={{$node.node_id}}&message_name={{$message.name}}"><i class="glyphicon glyphicon-plus"></i> 添加消费者 </button>
                             <button onclick="Common.confirm('确定要重载消息 [{{$message.name}}] 吗？', '/message/reload?node_id={{$node.node_id}}&message_name={{$message.name}}')" type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重载消息 </button>
                         </div>

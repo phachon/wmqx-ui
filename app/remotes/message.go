@@ -272,7 +272,7 @@ func (m *Message) GetConsumersStatus(name string) (consumerStatus []map[string]i
 	return
 }
 
-func (m *Message) Publish(name string, method string, data string, routeKey string) (err error) {
+func (m *Message) Publish(name, method, data, tokenHeader, routeKeyHeader, routeKey string) (err error) {
 
 	message, err := m.GetMessageByName(name)
 	if err != nil {
@@ -280,10 +280,10 @@ func (m *Message) Publish(name string, method string, data string, routeKey stri
 	}
 	headerValues := map[string]string{}
 	if message["is_need_token"].(bool) {
-		headerValues["WMQX_MESSAGE_TOKEN"] = message["token"].(string)
+		headerValues[tokenHeader] = message["token"].(string)
 	}
 	if routeKey != "" {
-		headerValues["WMQX_MESSAGE_ROUTEKEY"] = routeKey
+		headerValues[routeKeyHeader] = routeKey
 	}
 	url := fmt.Sprintf("%s/publish/%s", m.PublishUri, name)
 
@@ -304,7 +304,6 @@ func (m *Message) Publish(name string, method string, data string, routeKey stri
 			req.Header.Set(key, value)
 		}
 	}
-	//req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

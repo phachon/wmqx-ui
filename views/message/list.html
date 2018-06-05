@@ -21,8 +21,9 @@
                     </div>
                     <div class="col-md-8">
                         <button type="button" class="btn btn-primary" name="add_message" data-link="/message/add?node_id={{$nodeId}}"><i class="glyphicon glyphicon-plus"></i> 添加消息 </button>
-                        <button type="button" class="btn btn-success" name="test_message" data-link="/message/test?node_id={{$nodeId}}"><i class="glyphicon glyphicon-send"></i> 测试消息 </button>
                         <button onclick="Common.confirm('确定要重载该节点的所有消息吗？', '/node/reload?node_id={{$nodeId}}')" type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重载节点 </button>
+                        <button type="button" class="btn btn-success" name="test_message" data-link="/message/test?node_id={{$nodeId}}"><i class="glyphicon glyphicon-send"></i> 测试发送 </button>
+                        {{/*<button type="button" class="btn btn-info" name="publish_sdk" data-link="/message/publish?node_id={{$nodeId}}"><i class="glyphicon glyphicon-folder-open"></i> Publish SDK </button>*/}}
                     </div>
                     </form>
                 </div>
