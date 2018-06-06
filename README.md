@@ -1,10 +1,7 @@
 # WMQX-UI
 
 [![stable](https://img.shields.io/badge/stable-stable-green.svg)](https://github.com/phachon/wmqx-ui/) 
-[![build](https://img.shields.io/shippable/5444c5ecb904a4b21567b0ff.svg)](https://travis-ci.org/phachon/wmqx-ui)
-[![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/phachon/wmqx-ui)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/phachon/wmqx-ui/master/LICENSE)
-[![go_Report](https://goreportcard.com/badge/github.com/phachon/wmqx-ui)](https://goreportcard.com/report/github.com/phachon/wmqx-ui)
 [![platforms](https://img.shields.io/badge/platform-All-yellow.svg?style=flat)]()
 [![download_count](https://img.shields.io/github/downloads/phachon/wmqx-ui/total.svg?style=plastic)](https://github.com/phachon/wmqx-ui/releases) 
 [![release](https://img.shields.io/github/release/phachon/wmqx-ui.svg?style=flat)](https://github.com/phachon/wmqx-ui/releases) 
