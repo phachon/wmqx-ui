@@ -4,6 +4,10 @@
 -- author: phachon@163.com
 -- -------------------------------------------
 
+create DATABASE IF NOT EXISTS wmqx CHARSET utf8;
+
+use wmqx;
+
 -- -------------------------------------------
 -- wmqx user table
 -- -------------------------------------------

@@ -80,6 +80,7 @@ func initConfig()  {
 	logConfigs, err := beego.AppConfig.GetSection("log")
 	if err != nil {
 		log.Println(err.Error())
+		os.Exit(1)
 	}
 	for adapter, config := range logConfigs {
 		beego.SetLogger(adapter, config)
@@ -106,6 +107,6 @@ func initDB()  {
 	err := models.G.Regist("default", cfg)
 	if err != nil {
 		beego.Error(fmt.Errorf("database error:%s,with config : %v", err, cfg))
-		os.Exit(100)
+		os.Exit(1)
 	}
 }
