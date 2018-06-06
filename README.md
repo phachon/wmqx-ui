@@ -6,7 +6,7 @@
 [![download_count](https://img.shields.io/github/downloads/phachon/wmqx-ui/total.svg?style=plastic)](https://github.com/phachon/wmqx-ui/releases) 
 [![release](https://img.shields.io/github/release/phachon/wmqx-ui.svg?style=flat)](https://github.com/phachon/wmqx-ui/releases) 
 
-[![logo](./logo.png)](https://github.com/phachon/wmqx)
+[![logo](https://github.com/phachon/wmqx/raw/master/logo.png)](https://github.com/phachon/wmqx)
 
 WMQX-UI 是根据 WMQX Manager Api 构建的后台管理系统，如果您还不了解 WMQX，点击查看 [WMQX](https://github.com/phachon/wmqx)
 
@@ -63,6 +63,9 @@ conn_max_connection=200
 
 ### 登录
 默认账号密码是 root, 111111。角色为超级管理员
+
+### 后台预览
+[![main](./docs/main.png)]()
 
 ### 节点
 这里的节点指的是 WMQX 服务，没有节点，请先安装 [WMQX](https://github.com/phachon/wmqx).
